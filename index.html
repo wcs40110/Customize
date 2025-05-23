@@ -102,23 +102,25 @@
 <body>
   <h1>Shady Creek Design Co</h1>
   <div class="instructions">
-    If you have more than one item being engraved <br>
-    please fill out seperate forms.<br>
-    If identical items are being engraved <br>
-    such as two black cats, simply number them.<br>
+    If you have more than one item being engraved please fill one seperate forms.<br>
+    If identical items are being engraved, such as two black cats, simply number them.<br>
     <em>ie Black Cat 1, Black Cat 2.</em>
   </div>
   <form id="svgForm" autocomplete="off" onsubmit="event.preventDefault();">
     <div>
       <label for="customerInput">Customer Name:</label>
-      <input type="text" id="customerInput" placeholder="e.g. John Jacob" required />
+      <input type="text" id="customerInput" placeholder="e.g. Acme" required />
     </div>
     <div>
-      <label for="descInput">Item to be Engraved:</label>
-      <input type="text" id="descInput" placeholder="e.g. Black and White Cat" required />
+      <label for="descInput">Description:</label>
+      <input type="text" id="descInput" placeholder="e.g. Logo" required />
     </div>
     <div>
-      <label for="textInput">Desired Customization:</label>
+      <label for="locationInput">Engraving Location:</label>
+      <input type="text" id="locationInput" placeholder="e.g. Back, Bottom, Side" required />
+    </div>
+    <div>
+      <label for="textInput">Text:</label>
       <input type="text" id="textInput" placeholder="Enter your text here" required />
     </div>
     <div>
@@ -173,7 +175,8 @@
       const svgElement = document.getElementById('svgPreview').innerHTML;
       const customer = document.getElementById('customerInput').value.trim() || "Customer";
       const desc = document.getElementById('descInput').value.trim() || "Design";
-      const filename = `${sanitizeFilename(customer)}-${sanitizeFilename(desc)}.svg`;
+      const location = document.getElementById('locationInput').value.trim() || "Location";
+      const filename = `${sanitizeFilename(customer)}-${sanitizeFilename(desc)}-${sanitizeFilename(location)}.svg`;
 
       const blob = new Blob([svgElement], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
@@ -191,7 +194,7 @@
 
     // Add automatic update listeners
     window.addEventListener('DOMContentLoaded', function () {
-      ['textInput', 'fontSelector', 'customerInput', 'descInput'].forEach(function(id) {
+      ['textInput', 'fontSelector', 'customerInput', 'descInput', 'locationInput'].forEach(function(id) {
         document.getElementById(id).addEventListener(
           (id === 'fontSelector' ? 'change' : 'input'),
           generateSVG
