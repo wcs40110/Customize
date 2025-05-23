@@ -115,4 +115,63 @@
         <option value="Ribeye Marrow" style="font-family: 'Ribeye Marrow', cursive;">Ribeye Marrow</option>
       </select>
     </div>
-    <button type
+    <button type="submit">Preview</button>
+    <button type="button" id="downloadBtn" onclick="downloadSVG()" disabled>Submit</button>
+  </form>
+  <div id="svgPreview"></div>
+  <script>
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function (m) {
+        return ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[m];
+      });
+    }
+
+    function generateSVG() {
+      const text = document.getElementById('textInput').value;
+      const font = document.getElementById('fontSelector').value;
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100">
+          <style>
+            .customText {
+              font-family: "${font}", sans-serif;
+              font-size: 24px;
+              fill: black;
+            }
+          </style>
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="customText">
+            ${escapeHTML(text)}
+          </text>
+        </svg>
+      `;
+      document.getElementById('svgPreview').innerHTML = svg;
+      document.getElementById('downloadBtn').disabled = false;
+    }
+
+    function downloadSVG() {
+      const svgElement = document.getElementById('svgPreview').innerHTML;
+      const customer = document.getElementById('customerInput').value.trim() || "Customer";
+      const desc = document.getElementById('descInput').value.trim() || "Design";
+      const filename = `${sanitizeFilename(customer)}-${sanitizeFilename(desc)}.svg`;
+
+      const blob = new Blob([svgElement], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function sanitizeFilename(name) {
+      // Remove characters not allowed in filenames
+      return name.replace(/[^a-z0-9_-]/gi, '_');
+    }
+  </script>
+</body>
+</html>
