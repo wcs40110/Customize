@@ -90,8 +90,8 @@
   </style>
 </head>
 <body>
-  <h1>Text to SVG Generator</h1>
-  <form id="svgForm" onsubmit="event.preventDefault(); generateSVG();">
+  <h1>Shady Creek Deisgn Co.</h1>
+  <form id="svgForm" autocomplete="off" onsubmit="event.preventDefault();">
     <div>
       <label for="customerInput">Customer Name:</label>
       <input type="text" id="customerInput" placeholder="e.g. Acme" required />
@@ -115,7 +115,6 @@
         <option value="Ribeye Marrow" style="font-family: 'Ribeye Marrow', cursive;">Ribeye Marrow</option>
       </select>
     </div>
-    <button type="submit">Preview</button>
     <button type="button" id="downloadBtn" onclick="downloadSVG()" disabled>Submit</button>
   </form>
   <div id="svgPreview"></div>
@@ -150,7 +149,7 @@
         </svg>
       `;
       document.getElementById('svgPreview').innerHTML = svg;
-      document.getElementById('downloadBtn').disabled = false;
+      document.getElementById('downloadBtn').disabled = !text;
     }
 
     function downloadSVG() {
@@ -172,6 +171,17 @@
       // Remove characters not allowed in filenames
       return name.replace(/[^a-z0-9_-]/gi, '_');
     }
+
+    // Add automatic update listeners
+    window.addEventListener('DOMContentLoaded', function () {
+      ['textInput', 'fontSelector', 'customerInput', 'descInput'].forEach(function(id) {
+        document.getElementById(id).addEventListener(
+          (id === 'fontSelector' ? 'change' : 'input'),
+          generateSVG
+        );
+      });
+      generateSVG();
+    });
   </script>
 </body>
 </html>
