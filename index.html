@@ -57,7 +57,7 @@
       font-size: 1rem;
     }
 
-    input, select, button {
+    input, select, button { /* Style for submit button also included here */
       font-size: 1rem;
       padding: 0.5rem;
       border-radius: 6px;
@@ -65,7 +65,8 @@
       box-sizing: border-box;
     }
 
-    button {
+    /* Specific button styling (can be reused or made more specific if needed) */
+    .action-button {
       background: var(--primary);
       color: white;
       font-weight: bold;
@@ -73,9 +74,11 @@
       margin-top: 0.5rem;
       cursor: pointer;
       transition: background 0.2s;
+      width: 100%; /* Make button full width of its container */
+      max-width: 420px; /* Align with form max-width */
     }
 
-    button:hover {
+    .action-button:hover {
       background: #2563eb;
     }
 
@@ -86,20 +89,35 @@
       box-shadow: 0 2px 12px var(--shadow);
       padding: 1rem;
       width: 95vw;
-      max-width: 400px;
+      max-width: 400px; /* Slightly less than form for centering */
       min-height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
       word-break: break-word;
+      box-sizing: border-box;
     }
+     .submit-button-container { /* Container for the submit button */
+        width: 95vw;
+        max-width: 420px; /* Match form width */
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem; /* Add some space above the button */
+    }
+
 
     @media (max-width: 500px) {
       h1 {
         font-size: 1.25rem;
       }
-      form, #svgPreview {
+      form, #svgPreview, .submit-button-container {
         max-width: 98vw;
+      }
+       #svgPreview {
+        max-width: 95vw; /* Adjust preview width for smaller screens */
+      }
+      .action-button {
+         max-width: 95vw;
       }
     }
   </style>
@@ -108,6 +126,7 @@
   <h1>Shady Creek Design Co</h1>
   <div class="instructions">
     If you have more than one item being engraved please fill out separate forms.<br>
+    Preview will update as you type and select fonts.
   </div>
   <form id="svgForm">
     <label for="customerInput">Customer Name:</label>
@@ -131,78 +150,140 @@
       <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
       <option value="Ribeye Marrow">Ribeye Marrow</option>
     </select>
+    </form>
 
-    <button type="button" onclick="handleSubmit()">Submit</button>
-  </form>
+  <div id="svgPreview">Enter text and select a font to see a preview.</div>
 
-  <div id="svgPreview"></div>
+  <div class="submit-button-container">
+    <button type="button" onclick="handleSubmit()" class="action-button">Submit & Download SVG</button>
+  </div>
 
   <script>
     const embeddedFontData = {
-      "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==",
-      "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh",
-      "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=",
-      "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=",
-      "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh",
-      "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ=="
+      "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==", // Replace with actual Base64
+      "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh", // Replace with actual Base64
+      "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=", // Replace with actual Base64
+      "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=", // Replace with actual Base64
+      "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh", // Replace with actual Base64
+      "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ==" // Replace with actual Base64
+      // IMPORTANT: The Base64 strings above are placeholders.
+      // You need to replace them with the actual Base64 encoded WOFF2 font data for each font.
     };
+
+    const textInputElement = document.getElementById('textInput');
+    const fontSelectorElement = document.getElementById('fontSelector');
+    const svgPreviewElement = document.getElementById('svgPreview');
+
+    function generateSvgContent(text, font, fontDataUrl) {
+      if (!text.trim()) {
+        return 'Enter text and select a font to see a preview.';
+      }
+      return `<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200">
+  <style>
+    @font-face {
+      font-family: '${font}';
+      src: url('${fontDataUrl}') format('woff2');
+    }
+    text {
+      font-family: '${font}';
+      font-size: 40px; /* Consider making this dynamic or larger for preview */
+      fill: #333;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+  </style>
+  <text x="50%" y="50%">${text}</text>
+</svg>`;
+    }
+
+    function updatePreview() {
+      const text = textInputElement.value;
+      const font = fontSelectorElement.value;
+      const fontDataUrl = embeddedFontData[font];
+
+      if (!fontDataUrl) {
+        console.error("Font data URL not found for:", font);
+        svgPreviewElement.innerHTML = 'Error: Font data not found.';
+        return;
+      }
+      
+      // Basic check for missing actual Base64 data (if still placeholder)
+      if (fontDataUrl.endsWith("_Zm9udGRhdGE==") && fontDataUrl.startsWith("data:application/font-woff2;base64,")) {
+          console.warn(`Placeholder Base64 data detected for font: ${font}. Preview might not render correctly in all browsers if actual font data is not embedded.`);
+      }
+
+
+      const svgContent = generateSvgContent(text, font, fontDataUrl);
+      svgPreviewElement.innerHTML = svgContent;
+    }
 
     function handleSubmit() {
       const customerName = document.getElementById('customerInput').value;
       const itemDescription = document.getElementById('descInput').value;
       const engravingLocation = document.getElementById('locationInput').value;
-      const text = document.getElementById('textInput').value;
-      const font = document.getElementById('fontSelector').value;
-      const fontData = embeddedFontData[font];
+      const text = textInputElement.value; // Get from the same input
+      const font = fontSelectorElement.value; // Get from the same selector
+      const fontDataUrl = embeddedFontData[font];
 
-      // Create a filename-friendly string
-      // Replace spaces with underscores and remove characters not suitable for filenames
+      if (!text || !customerName || !itemDescription || !engravingLocation) {
+        alert("Please fill out all required fields before submitting.");
+        return;
+      }
+      
+      if (!fontDataUrl) {
+        console.error("Font data URL not found for submission:", font);
+        alert("Error: Selected font data is missing. Cannot generate SVG.");
+        return;
+      }
+
       const fileNameFriendly = (str) => str.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
-
       const customerPart = fileNameFriendly(customerName) || 'customer';
       const descriptionPart = fileNameFriendly(itemDescription) || 'item';
       const placementPart = fileNameFriendly(engravingLocation) || 'location';
-
       const dynamicFilename = `${customerPart}_${descriptionPart}_${placementPart}.svg`;
 
-      const svg = `<?xml version="1.0" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200">
-  <style>
-    @font-face {
-      font-family: '${font}';
-      src: url('${fontData}') format('woff2');
-    }
-    text {
-      font-family: '${font}';
-      font-size: 40px;
-      fill: #333;
-    }
-  </style>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${text}</text>
-</svg>`;
+      const svgForDownload = generateSvgContent(text, font, fontDataUrl); // Re-use SVG generation
 
-      const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+      const blob = new Blob([svgForDownload], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = dynamicFilename; // Use the new dynamic filename here
+      a.download = dynamicFilename;
+      document.body.appendChild(a); // Required for Firefox
       a.click();
+      document.body.removeChild(a); // Clean up
+      URL.revokeObjectURL(url); // Clean up blob URL
 
-      document.getElementById("svgPreview").innerHTML = svg;
-      document.getElementById("popupOverlay").style.display = "flex";
+      // Optional: Show a success message (your popup logic can be re-integrated here)
+      // document.getElementById("popupOverlay").style.display = "flex";
+      alert("SVG file download initiated: " + dynamicFilename);
     }
 
+    // Event Listeners for live preview
+    textInputElement.addEventListener('input', updatePreview);
+    fontSelectorElement.addEventListener('change', updatePreview);
+
+    // Initial preview update in case there's pre-filled text (optional)
+    // or to set the default font preview if text is entered first.
+    // updatePreview(); // You can call this on page load if desired.
+
+    // Your existing popup logic (can be re-integrated with handleSubmit)
+    /*
     function closePopup() {
       document.getElementById("popupOverlay").style.display = "none";
     }
+    */
+    // Make sure your popup HTML is still in the body if you re-enable this:
+    /*
+    <div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;justify-content:center;align-items:center;">
+      <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;">
+        <p style="font-size:1.25rem;margin:0;">Hey, you did it!</p>
+        <button onclick="closePopup()" style="margin-top:1rem;padding:0.5rem 1rem;border:none;background:#3b82f6;color:white;border-radius:6px;font-weight:bold;cursor:pointer;">OK</button>
+      </div>
+    </div>
+    */
   </script>
-<div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;justify-content:center;align-items:center;">
-  <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;">
-    <p style="font-size:1.25rem;margin:0;">Hey, you did it!</p>
-    <button onclick="closePopup()" style="margin-top:1rem;padding:0.5rem 1rem;border:none;background:#3b82f6;color:white;border-radius:6px;font-weight:bold;cursor:pointer;">OK</button>
-  </div>
-</div>
-
-</body>
+  </body>
 </html>
