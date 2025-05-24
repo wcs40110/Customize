@@ -3,44 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shady Creek Design Co</title>
-  <!-- Google Fonts (all at once, plus preconnect for performance) -->
+  <title>Shady Creek Design Co.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Ribeye+Marrow&family=Righteous&family=Satisfy&family=Short+Stack&display=swap" rel="stylesheet">
   <style>
-    /* Custom font utility classes */
-    .satisfy-regular {
-      font-family: "Satisfy", cursive;
-      font-weight: 400;
-      font-style: normal;
-    }
-    .righteous-regular {
-      font-family: "Righteous", sans-serif;
-      font-weight: 400;
-      font-style: normal;
-    }
-    .grand-hotel-regular {
-      font-family: "Grand Hotel", cursive;
-      font-weight: 400;
-      font-style: normal;
-    }
-    .short-stack-regular {
-      font-family: "Short Stack", cursive;
-      font-weight: 400;
-      font-style: normal;
-    }
-    .love-ya-like-a-sister-regular {
-      font-family: "Love Ya Like A Sister", cursive;
-      font-weight: 400;
-      font-style: normal;
-    }
-    .ribeye-marrow-regular {
-      font-family: "Ribeye Marrow", serif;
-      font-weight: 400;
-      font-style: normal;
-    }
-
+    /* General body and layout styles */
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
@@ -90,6 +58,8 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
+
+    /* Styling for <select> options to show their respective fonts */
     select option[value="Satisfy"] { font-family: 'Satisfy', cursive; }
     select option[value="Righteous"] { font-family: 'Righteous', sans-serif; }
     select option[value="Grand Hotel"] { font-family: 'Grand Hotel', cursive; }
@@ -173,9 +143,7 @@
 <body>
   <h1>Shady Creek Design Co</h1>
   <div class="instructions">
-    If you have more than one item being engraved please fill one seperate forms.<br>
-    If identical items are being engraved, such as two black cats, simply number them.<br>
-    <em>ie Black Cat 1, Black Cat 2.</em>
+    If you have more than one item being engraved please fill out seperate forms.<br>
   </div>
   <form id="svgForm" autocomplete="off" onsubmit="event.preventDefault();">
     <div>
@@ -184,11 +152,11 @@
     </div>
     <div>
       <label for="descInput">Item to be Engraved:</label>
-      <input type="text" id="descInput" placeholder="Item and Color" required />
+      <input type="text" id="descInput" placeholder="Describe Item and Color" required />
     </div>
     <div>
       <label for="locationInput">Engraving Location:</label>
-      <input type="text" id="locationInput" placeholder="ex Back, Bottom, Sign" required />
+      <input type="text" id="locationInput" placeholder="ex Back, Bottom, Sign etc" required />
     </div>
     <div>
       <label for="textInput">Customization:</label>
@@ -197,26 +165,42 @@
     <div>
       <label for="fontSelector">Font:</label>
       <select id="fontSelector">
-        <option value="Satisfy" class="satisfy-regular">Satisfy</option>
-        <option value="Righteous" class="righteous-regular">Righteous</option>
-        <option value="Grand Hotel" class="grand-hotel-regular">Grand Hotel</option>
-        <option value="Short Stack" class="short-stack-regular">Short Stack</option>
-        <option value="Love Ya Like A Sister" class="love-ya-like-a-sister-regular">Love Ya Like a Sister</option>
-        <option value="Ribeye Marrow" class="ribeye-marrow-regular">Ribeye Marrow</option>
+        <option value="Satisfy">Satisfy</option>
+        <option value="Righteous">Righteous</option>
+        <option value="Grand Hotel">Grand Hotel</option>
+        <option value="Short Stack">Short Stack</option>
+        <option value="Love Ya Like A Sister">Love Ya Like a Sister</option>
+        <option value="Ribeye Marrow">Ribeye Marrow</option>
       </select>
     </div>
     <div id="svgPreview"></div>
     <button type="button" id="downloadBtn" onclick="downloadPNGAndConfirm()" disabled>Submit</button>
     <canvas id="hiddenCanvas" width="300" height="100"></canvas>
   </form>
-  <!-- Popup Overlay -->
+
   <div id="popupOverlay">
     <div id="popupBox">
       <div id="popupMessage">Hey, you did it right!!</div>
       <button onclick="closePopup()">OK</button>
     </div>
   </div>
+
   <script>
+    // --- THIS IS WHERE YOUR BASE64 FONT DATA GOES ---
+    // Replace 11111111111, 22222222222, etc., with your actual,
+    // very long Base64 data strings for each font.
+    // IMPORTANT: Each string MUST start with "data:application/octet-stream;base64,"
+    // followed immediately by the Base64 characters, without any other CSS syntax.
+    const embeddedFontData = {
+  "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==",
+  "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh",
+  "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=",
+  "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=",
+  "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh",
+  "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ=="
+};
+    // --- END OF FONT DATA SECTION ---
+
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, function (m) {
         return ({
@@ -231,12 +215,30 @@
 
     function generateSVG() {
       const text = document.getElementById('textInput').value;
-      const font = document.getElementById('fontSelector').value;
+      const fontName = document.getElementById('fontSelector').value;
+      const selectedFontBase64DataURI = embeddedFontData[fontName];
+
+      let fontFaceRule = "";
+      if (selectedFontBase64DataURI && selectedFontBase64DataURI.startsWith("data:application/octet-stream;base64,")) {
+        fontFaceRule = `
+          @font-face {
+            font-family: "${fontName}";
+            src: url("${selectedFontBase64DataURI}");
+            /* If you know the specific format (e.g., woff2), you can add it:
+               format('woff2')
+               but for application/octet-stream, the browser will try to infer. */
+          }
+        `;
+      } else {
+        console.warn("Base64 data for font '" + fontName + "' not found or is not a valid data URI. SVG will use fallback fonts.");
+      }
+
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="300" height="100" viewBox="0 0 300 100">
           <style>
+            ${fontFaceRule}
             .customText {
-              font-family: "${font}", cursive, sans-serif, serif;
+              font-family: "${fontName}", cursive, sans-serif, serif;
               font-size: 24px;
               fill: black;
             }
@@ -251,43 +253,70 @@
     }
 
     function sanitizeFilename(name) {
-      // Remove characters not allowed in filenames
       return name.replace(/[^a-z0-9_-]/gi, '_');
     }
 
     function downloadPNGAndConfirm() {
-      // Download as PNG, then show popup
-      const svgElement = document.getElementById('svgPreview').innerHTML;
+      const svgPreviewDiv = document.getElementById('svgPreview');
+      const svgElement = svgPreviewDiv.querySelector('svg'); // Get the SVG element itself
+
+      if (!svgElement) {
+        alert("SVG preview not found. Cannot download.");
+        console.error("SVG element not found in #svgPreview for download.");
+        return;
+      }
+
+      // Serialize the SVG element to string
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svgElement);
+
       const customer = document.getElementById('customerInput').value.trim() || "Customer";
       const desc = document.getElementById('descInput').value.trim() || "Design";
       const location = document.getElementById('locationInput').value.trim() || "Location";
       const filename = `${sanitizeFilename(customer)}-${sanitizeFilename(desc)}-${sanitizeFilename(location)}.png`;
 
-      // Create an image from SVG
-      const svg64 = btoa(unescape(encodeURIComponent(svgElement)));
+      const svg64 = btoa(unescape(encodeURIComponent(svgString)));
       const image64 = 'data:image/svg+xml;base64,' + svg64;
       const img = new window.Image();
+      img.crossOrigin = 'anonymous'; // Helps with canvas tainting if any external resources were somehow involved
+
       img.onload = function() {
         const canvas = document.getElementById('hiddenCanvas');
         const ctx = canvas.getContext('2d');
-        // clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // white background for png
         ctx.fillStyle = "#fff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
+        
+        // For potentially better quality if SVG is larger than canvas:
+        // Determine SVG dimensions
+        // const svgClientWidth = svgElement.clientWidth || 300;
+        // const svgClientHeight = svgElement.clientHeight || 100;
+        // Or use viewBox if clientWidth/Height aren't reliable for non-displayed cloned SVGs
+        // const viewBox = svgElement.viewBox.baseVal;
+        // const svgActualWidth = viewBox ? viewBox.width : svgClientWidth;
+        // const svgActualHeight = viewBox ? viewBox.height : svgClientHeight;
+
+        // Draw image, maintaining aspect ratio, fitting into canvas
+        // This simple drawImage might not scale perfectly if SVG is very different from canvas.
+        // For your 300x100 SVG and 300x100 canvas, this is fine.
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+
         canvas.toBlob(function(blob) {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
           a.download = filename;
+          document.body.appendChild(a);
           a.click();
+          document.body.removeChild(a);
           URL.revokeObjectURL(url);
           showPopup("Item has been submitted!");
         }, "image/png");
       };
-      img.onerror = function() {
-        alert("Failed to convert SVG to PNG.");
+      img.onerror = function(e) {
+        console.error("Image loading error. This often happens if fonts within the SVG cannot be accessed by the image/canvas.", e);
+        alert("Failed to convert SVG to PNG. Check console for errors. Ensure font data is correctly embedded in the SVG string.");
       };
       img.src = image64;
     }
@@ -301,7 +330,6 @@
       document.getElementById('popupOverlay').style.display = "none";
     }
 
-    // Add automatic update listeners
     window.addEventListener('DOMContentLoaded', function () {
       ['textInput', 'fontSelector', 'customerInput', 'descInput', 'locationInput'].forEach(function(id) {
         document.getElementById(id).addEventListener(
@@ -309,7 +337,14 @@
           generateSVG
         );
       });
-      generateSVG();
+      // Initial generation of SVG to ensure preview area isn't blank
+      // or provide a default placeholder
+      if(document.getElementById('textInput').value) {
+        generateSVG();
+      } else {
+        document.getElementById('svgPreview').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100" viewBox="0 0 300 100"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#ccc">Preview will appear here</text></svg>';
+        document.getElementById('downloadBtn').disabled = true;
+      }
     });
   </script>
 </body>
