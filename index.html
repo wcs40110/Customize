@@ -7,11 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Ribeye+Marrow&family=Righteous&family=Satisfy&family=Short+Stack&display=swap" rel="stylesheet">
   <style>
     :root {
-      --accent: #e879f9; /* This was the previous h1 color, can be reused elsewhere or removed if not needed */
+      --accent: #e879f9;
       --background: #fffafc;
       --primary: #3b82f6;
       --shadow: rgba(0, 0, 0, 0.1);
-      --sapphire: #0F52BA; /* Sapphire color */
+      --sapphire: #0F52BA;
     }
 
     body {
@@ -30,7 +30,7 @@
       font-size: 1.75rem;
       text-align: center;
       font-family: 'Grand Hotel', cursive;
-      color: var(--sapphire); /* Changed to sapphire */
+      color: var(--sapphire);
     }
 
     .instructions {
@@ -90,7 +90,6 @@
       padding: 1rem;
       width: 95vw;
       max-width: 400px;
-      /* Adjusted min-height to better accommodate potentially larger SVG text */
       min-height: 200px;
       display: flex;
       align-items: center;
@@ -116,7 +115,7 @@
       }
        #svgPreview {
         max-width: 95vw;
-        min-height: 180px; /* Adjust for smaller screens */
+        min-height: 180px;
       }
       .action-button {
          max-width: 95vw;
@@ -157,7 +156,7 @@
   <div id="svgPreview">Enter text and select a font to see a preview.</div>
 
   <div class="submit-button-container">
-    <button type="button" onclick="handleSubmit()" class="action-button">Submit</button>
+    <button type="button" onclick="handleSubmit()" class="action-button">SUBMIT</button> {/* Button text changed */}
   </div>
 
   <script>
@@ -179,11 +178,8 @@
       if (!text.trim()) {
         return 'Enter text and select a font to see a preview.';
       }
-      // Increased SVG height and font size for preview
-      // Original font-size was 40px, 4x is 160px
-      // Original SVG height was 200, adjusting to accommodate larger text
-      const svgHeight = 300; // Increased height for larger font
-      const fontSize = 160;  // Approx 4x 40px
+      const svgHeight = 300;
+      const fontSize = 160;
 
       return `<?xml version="1.0" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="${svgHeight}" viewBox="0 0 600 ${svgHeight}">
@@ -194,7 +190,7 @@
     }
     text {
       font-family: '${font}';
-      font-size: ${fontSize}px; /* Increased font size */
+      font-size: ${fontSize}px;
       fill: #333;
       text-anchor: middle;
       dominant-baseline: middle;
@@ -217,9 +213,6 @@
       
       if (fontDataUrl.endsWith("_Zm9udGRhdGE==") && fontDataUrl.startsWith("data:application/font-woff2;base64,")) {
           console.warn(`Placeholder Base64 data detected for font: ${font}. Preview might not render correctly if actual font data is not embedded.`);
-          // Optionally, provide a visual cue in the preview for placeholder data
-          // svgPreviewElement.innerHTML = '<div style="color: orange; text-align: center;">Preview may be inaccurate: Placeholder font data detected.</div>';
-          // return; // Or allow preview to attempt rendering
       }
 
       const svgContent = generateSvgContent(text, font, fontDataUrl);
@@ -256,10 +249,6 @@
       const placementPart = fileNameFriendly(engravingLocation) || 'location';
       const dynamicFilename = `${customerPart}_${descriptionPart}_${placementPart}.svg`;
 
-      // For download, we might want to use the original/intended SVG dimensions and font size,
-      // unless the larger preview size is also desired for the final output.
-      // For now, using the same generateSvgContent which uses larger font for consistency.
-      // If you need a different size for download, we'd need another version of generateSvgContent or pass size params.
       const svgForDownload = generateSvgContent(text, font, fontDataUrl);
 
       const blob = new Blob([svgForDownload], { type: "image/svg+xml;charset=utf-8" });
@@ -273,17 +262,27 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      alert("SVG file download initiated: " + dynamicFilename);
-      // Re-integrate your popup logic here if desired
-      // document.getElementById("popupOverlay").style.display = "flex";
+      // Show the custom popup instead of an alert
+      document.getElementById("popupOverlay").style.display = "flex";
+      // console.log("SVG file download initiated: " + dynamicFilename); // You can keep this for debugging if you like
     }
 
     textInputElement.addEventListener('input', updatePreview);
     fontSelectorElement.addEventListener('change', updatePreview);
 
-    // function closePopup() {
-    //   document.getElementById("popupOverlay").style.display = "none";
-    // }
+    // Re-enabled closePopup function
+    function closePopup() {
+      document.getElementById("popupOverlay").style.display = "none";
+    }
   </script>
-  </body>
+
+  <div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;justify-content:center;align-items:center;">
+    <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;">
+      {/* Popup text updated below */}
+      <p style="font-size:1.25rem;margin:0;">Hey you did it! Your customization is now ready to be engraved.</p>
+      <button onclick="closePopup()" style="margin-top:1rem;padding:0.5rem 1rem;border:none;background:#3b82f6;color:white;border-radius:6px;font-weight:bold;cursor:pointer;">OK</button>
+    </div>
+  </div>
+
+</body>
 </html>
