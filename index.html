@@ -4,71 +4,69 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shady Creek Design Co.</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Ribeye+Marrow&family=Righteous&family=Satisfy&family=Short+Stack&display=swap" rel="stylesheet">
   <style>
-    /* General body and layout styles */
+    :root {
+      --accent: #e879f9;
+      --background: #fffafc;
+      --primary: #3b82f6;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background-color: var(--background);
       margin: 0;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+      padding-bottom: 4rem;
     }
+
     h1 {
       margin-top: 2rem;
-      margin-bottom: 0.5rem;
-      font-size: 1.5rem;
+      font-size: 1.75rem;
       text-align: center;
+      font-family: 'Grand Hotel', cursive;
+      color: var(--accent);
     }
+
     .instructions {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #444;
       text-align: center;
-      margin-bottom: 1.2rem;
-      margin-left: 1rem;
-      margin-right: 1rem;
+      margin: 0.5rem 1rem 1.5rem;
       max-width: 410px;
     }
+
     form {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      background: white url('https://www.transparenttextures.com/patterns/flowers.png') repeat;
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px var(--shadow);
       display: flex;
       flex-direction: column;
       gap: 1rem;
       width: 95vw;
-      max-width: 400px;
+      max-width: 420px;
     }
+
     label {
       font-weight: bold;
-      margin-bottom: 0.25rem;
       font-size: 1rem;
     }
+
     input, select, button {
-      width: 100%;
       font-size: 1rem;
-      margin: 0;
       padding: 0.5rem;
       border-radius: 6px;
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
 
-    /* Styling for <select> options to show their respective fonts */
-    select option[value="Satisfy"] { font-family: 'Satisfy', cursive; }
-    select option[value="Righteous"] { font-family: 'Righteous', sans-serif; }
-    select option[value="Grand Hotel"] { font-family: 'Grand Hotel', cursive; }
-    select option[value="Short Stack"] { font-family: 'Short Stack', cursive; }
-    select option[value="Love Ya Like A Sister"] { font-family: 'Love Ya Like A Sister', cursive; }
-    select option[value="Ribeye Marrow"] { font-family: 'Ribeye Marrow', serif; }
-
     button {
-      background: #3b82f6;
+      background: var(--primary);
       color: white;
       font-weight: bold;
       border: none;
@@ -76,18 +74,16 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    button:disabled {
-      background: #bbb;
-      cursor: not-allowed;
-    }
-    button:hover:not(:disabled) {
+
+    button:hover {
       background: #2563eb;
     }
+
     #svgPreview {
-      margin: 1.5rem 0 0.5rem 0;
+      margin: 1.5rem 0 0.5rem;
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 12px var(--shadow);
       padding: 1rem;
       width: 95vw;
       max-width: 400px;
@@ -95,257 +91,84 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      word-break: break-all;
+      word-break: break-word;
     }
-    /* Popup styles */
-    #popupOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.3);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-    }
-    #popupBox {
-      background: #fff;
-      padding: 2rem 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-      text-align: center;
-      min-width: 220px;
-    }
-    #popupBox button {
-      margin-top: 1.2rem;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 0.5rem 1.5rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    #popupBox button:hover {
-      background: #2563eb;
-    }
-    canvas {
-      display: none;
-    }
+
     @media (max-width: 500px) {
-      h1 { font-size: 1.1rem; }
-      .instructions { font-size: 0.93rem; max-width: 98vw;}
-      form, #svgPreview { max-width: 98vw; }
-      #popupBox { min-width: 0; }
+      h1 {
+        font-size: 1.25rem;
+      }
+      form, #svgPreview {
+        max-width: 98vw;
+      }
     }
   </style>
 </head>
 <body>
   <h1>Shady Creek Design Co</h1>
   <div class="instructions">
-    If you have more than one item being engraved please fill out seperate forms.<br>
+    Fill out the form below to create a downloadable SVG file with your custom engraving text.
   </div>
-  <form id="svgForm" autocomplete="off" onsubmit="event.preventDefault();">
-    <div>
-      <label for="customerInput">Customer Name:</label>
-      <input type="text" id="customerInput" placeholder="ex John Jacob Jingleheimer Schmidt " required />
-    </div>
-    <div>
-      <label for="descInput">Item to be Engraved:</label>
-      <input type="text" id="descInput" placeholder="Describe Item and Color" required />
-    </div>
-    <div>
-      <label for="locationInput">Engraving Location:</label>
-      <input type="text" id="locationInput" placeholder="ex Back, Bottom, Sign etc" required />
-    </div>
-    <div>
-      <label for="textInput">Customization:</label>
-      <input type="text" id="textInput" placeholder="Text to be engraved goes here" required />
-    </div>
-    <div>
-      <label for="fontSelector">Font:</label>
-      <select id="fontSelector">
-        <option value="Satisfy">Satisfy</option>
-        <option value="Righteous">Righteous</option>
-        <option value="Grand Hotel">Grand Hotel</option>
-        <option value="Short Stack">Short Stack</option>
-        <option value="Love Ya Like A Sister">Love Ya Like a Sister</option>
-        <option value="Ribeye Marrow">Ribeye Marrow</option>
-      </select>
-    </div>
-    <div id="svgPreview"></div>
-    <button type="button" id="downloadBtn" onclick="downloadPNGAndConfirm()" disabled>Submit</button>
-    <canvas id="hiddenCanvas" width="300" height="100"></canvas>
+  <form id="svgForm">
+    <label for="textInput">Engraving Text</label>
+    <input type="text" id="textInput" required placeholder="Your text here...">
+
+    <label for="fontSelector">Choose Font</label>
+    <select id="fontSelector">
+      <option value="Satisfy">Satisfy</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Grand Hotel">Grand Hotel</option>
+      <option value="Short Stack">Short Stack</option>
+      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow">Ribeye Marrow</option>
+    </select>
+
+    <button type="button" onclick="generateSVG()">Download SVG</button>
   </form>
 
-  <div id="popupOverlay">
-    <div id="popupBox">
-      <div id="popupMessage">Hey, you did it right!!</div>
-      <button onclick="closePopup()">OK</button>
-    </div>
-  </div>
+  <div id="svgPreview"></div>
 
   <script>
-    // --- THIS IS WHERE YOUR BASE64 FONT DATA GOES ---
-    // Replace 11111111111, 22222222222, etc., with your actual,
-    // very long Base64 data strings for each font.
-    // IMPORTANT: Each string MUST start with "data:application/octet-stream;base64,"
-    // followed immediately by the Base64 characters, without any other CSS syntax.
     const embeddedFontData = {
-  "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==",
-  "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh",
-  "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=",
-  "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=",
-  "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh",
-  "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ=="
-};
-    // --- END OF FONT DATA SECTION ---
-
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, function (m) {
-        return ({
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#39;'
-        })[m];
-      });
-    }
+      "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==",
+      "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh",
+      "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=",
+      "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=",
+      "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh",
+      "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ=="
+    };
 
     function generateSVG() {
       const text = document.getElementById('textInput').value;
-      const fontName = document.getElementById('fontSelector').value;
-      const selectedFontBase64DataURI = embeddedFontData[fontName];
+      const font = document.getElementById('fontSelector').value;
+      const fontData = embeddedFontData[font];
 
-      let fontFaceRule = "";
-      if (selectedFontBase64DataURI && selectedFontBase64DataURI.startsWith("data:application/octet-stream;base64,")) {
-        fontFaceRule = `
-          @font-face {
-            font-family: "${fontName}";
-            src: url("${selectedFontBase64DataURI}");
-            /* If you know the specific format (e.g., woff2), you can add it:
-               format('woff2')
-               but for application/octet-stream, the browser will try to infer. */
-          }
-        `;
-      } else {
-        console.warn("Base64 data for font '" + fontName + "' not found or is not a valid data URI. SVG will use fallback fonts.");
-      }
-
-      const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="300" height="100" viewBox="0 0 300 100">
-          <style>
-            ${fontFaceRule}
-            .customText {
-              font-family: "${fontName}", cursive, sans-serif, serif;
-              font-size: 24px;
-              fill: black;
-            }
-          </style>
-          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="customText">
-            ${escapeHTML(text)}
-          </text>
-        </svg>
-      `;
-      document.getElementById('svgPreview').innerHTML = svg;
-      document.getElementById('downloadBtn').disabled = !text;
+      const svg = `<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200">
+  <style>
+    @font-face {
+      font-family: '${font}';
+      src: url('${fontData}') format('woff2');
     }
-
-    function sanitizeFilename(name) {
-      return name.replace(/[^a-z0-9_-]/gi, '_');
+    text {
+      font-family: '${font}';
+      font-size: 40px;
+      fill: #333;
     }
+  </style>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${text}</text>
+</svg>`;
 
-    function downloadPNGAndConfirm() {
-      const svgPreviewDiv = document.getElementById('svgPreview');
-      const svgElement = svgPreviewDiv.querySelector('svg'); // Get the SVG element itself
+      const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
 
-      if (!svgElement) {
-        alert("SVG preview not found. Cannot download.");
-        console.error("SVG element not found in #svgPreview for download.");
-        return;
-      }
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "engraving.svg";
+      a.click();
 
-      // Serialize the SVG element to string
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svgElement);
-
-      const customer = document.getElementById('customerInput').value.trim() || "Customer";
-      const desc = document.getElementById('descInput').value.trim() || "Design";
-      const location = document.getElementById('locationInput').value.trim() || "Location";
-      const filename = `${sanitizeFilename(customer)}-${sanitizeFilename(desc)}-${sanitizeFilename(location)}.png`;
-
-      const svg64 = btoa(unescape(encodeURIComponent(svgString)));
-      const image64 = 'data:image/svg+xml;base64,' + svg64;
-      const img = new window.Image();
-      img.crossOrigin = 'anonymous'; // Helps with canvas tainting if any external resources were somehow involved
-
-      img.onload = function() {
-        const canvas = document.getElementById('hiddenCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // For potentially better quality if SVG is larger than canvas:
-        // Determine SVG dimensions
-        // const svgClientWidth = svgElement.clientWidth || 300;
-        // const svgClientHeight = svgElement.clientHeight || 100;
-        // Or use viewBox if clientWidth/Height aren't reliable for non-displayed cloned SVGs
-        // const viewBox = svgElement.viewBox.baseVal;
-        // const svgActualWidth = viewBox ? viewBox.width : svgClientWidth;
-        // const svgActualHeight = viewBox ? viewBox.height : svgClientHeight;
-
-        // Draw image, maintaining aspect ratio, fitting into canvas
-        // This simple drawImage might not scale perfectly if SVG is very different from canvas.
-        // For your 300x100 SVG and 300x100 canvas, this is fine.
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-
-        canvas.toBlob(function(blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showPopup("Item has been submitted!");
-        }, "image/png");
-      };
-      img.onerror = function(e) {
-        console.error("Image loading error. This often happens if fonts within the SVG cannot be accessed by the image/canvas.", e);
-        alert("Failed to convert SVG to PNG. Check console for errors. Ensure font data is correctly embedded in the SVG string.");
-      };
-      img.src = image64;
+      document.getElementById("svgPreview").innerHTML = svg;
     }
-
-    function showPopup(message) {
-      document.getElementById('popupMessage').textContent = message;
-      document.getElementById('popupOverlay').style.display = "flex";
-    }
-
-    function closePopup() {
-      document.getElementById('popupOverlay').style.display = "none";
-    }
-
-    window.addEventListener('DOMContentLoaded', function () {
-      ['textInput', 'fontSelector', 'customerInput', 'descInput', 'locationInput'].forEach(function(id) {
-        document.getElementById(id).addEventListener(
-          (id === 'fontSelector' ? 'change' : 'input'),
-          generateSVG
-        );
-      });
-      // Initial generation of SVG to ensure preview area isn't blank
-      // or provide a default placeholder
-      if(document.getElementById('textInput').value) {
-        generateSVG();
-      } else {
-        document.getElementById('svgPreview').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100" viewBox="0 0 300 100"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#ccc">Preview will appear here</text></svg>';
-        document.getElementById('downloadBtn').disabled = true;
-      }
-    });
   </script>
 </body>
 </html>
