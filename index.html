@@ -7,10 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Ribeye+Marrow&family=Righteous&family=Satisfy&family=Short+Stack&display=swap" rel="stylesheet">
   <style>
     :root {
-      --accent: #e879f9;
+      --accent: #e879f9; /* This was the previous h1 color, can be reused elsewhere or removed if not needed */
       --background: #fffafc;
       --primary: #3b82f6;
       --shadow: rgba(0, 0, 0, 0.1);
+      --sapphire: #0F52BA; /* Sapphire color */
     }
 
     body {
@@ -29,7 +30,7 @@
       font-size: 1.75rem;
       text-align: center;
       font-family: 'Grand Hotel', cursive;
-      color: var(--accent);
+      color: var(--sapphire); /* Changed to sapphire */
     }
 
     .instructions {
@@ -57,7 +58,7 @@
       font-size: 1rem;
     }
 
-    input, select, button { /* Style for submit button also included here */
+    input, select, button {
       font-size: 1rem;
       padding: 0.5rem;
       border-radius: 6px;
@@ -65,7 +66,6 @@
       box-sizing: border-box;
     }
 
-    /* Specific button styling (can be reused or made more specific if needed) */
     .action-button {
       background: var(--primary);
       color: white;
@@ -74,8 +74,8 @@
       margin-top: 0.5rem;
       cursor: pointer;
       transition: background 0.2s;
-      width: 100%; /* Make button full width of its container */
-      max-width: 420px; /* Align with form max-width */
+      width: 100%;
+      max-width: 420px;
     }
 
     .action-button:hover {
@@ -89,20 +89,21 @@
       box-shadow: 0 2px 12px var(--shadow);
       padding: 1rem;
       width: 95vw;
-      max-width: 400px; /* Slightly less than form for centering */
-      min-height: 120px;
+      max-width: 400px;
+      /* Adjusted min-height to better accommodate potentially larger SVG text */
+      min-height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
       word-break: break-word;
       box-sizing: border-box;
     }
-     .submit-button-container { /* Container for the submit button */
+     .submit-button-container {
         width: 95vw;
-        max-width: 420px; /* Match form width */
+        max-width: 420px;
         display: flex;
         justify-content: center;
-        margin-top: 1rem; /* Add some space above the button */
+        margin-top: 1rem;
     }
 
 
@@ -114,7 +115,8 @@
         max-width: 98vw;
       }
        #svgPreview {
-        max-width: 95vw; /* Adjust preview width for smaller screens */
+        max-width: 95vw;
+        min-height: 180px; /* Adjust for smaller screens */
       }
       .action-button {
          max-width: 95vw;
@@ -150,7 +152,7 @@
       <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
       <option value="Ribeye Marrow">Ribeye Marrow</option>
     </select>
-    </form>
+  </form>
 
   <div id="svgPreview">Enter text and select a font to see a preview.</div>
 
@@ -160,14 +162,13 @@
 
   <script>
     const embeddedFontData = {
-      "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==", // Replace with actual Base64
-      "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh", // Replace with actual Base64
-      "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=", // Replace with actual Base64
-      "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=", // Replace with actual Base64
-      "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh", // Replace with actual Base64
-      "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ==" // Replace with actual Base64
-      // IMPORTANT: The Base64 strings above are placeholders.
-      // You need to replace them with the actual Base64 encoded WOFF2 font data for each font.
+      // IMPORTANT: Replace these placeholder Base64 strings with your actual WOFF2 font data.
+      "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==",
+      "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh",
+      "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=",
+      "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=",
+      "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh",
+      "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ=="
     };
 
     const textInputElement = document.getElementById('textInput');
@@ -178,8 +179,14 @@
       if (!text.trim()) {
         return 'Enter text and select a font to see a preview.';
       }
+      // Increased SVG height and font size for preview
+      // Original font-size was 40px, 4x is 160px
+      // Original SVG height was 200, adjusting to accommodate larger text
+      const svgHeight = 300; // Increased height for larger font
+      const fontSize = 160;  // Approx 4x 40px
+
       return `<?xml version="1.0" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${svgHeight}" viewBox="0 0 600 ${svgHeight}">
   <style>
     @font-face {
       font-family: '${font}';
@@ -187,7 +194,7 @@
     }
     text {
       font-family: '${font}';
-      font-size: 40px; /* Consider making this dynamic or larger for preview */
+      font-size: ${fontSize}px; /* Increased font size */
       fill: #333;
       text-anchor: middle;
       dominant-baseline: middle;
@@ -204,15 +211,16 @@
 
       if (!fontDataUrl) {
         console.error("Font data URL not found for:", font);
-        svgPreviewElement.innerHTML = 'Error: Font data not found.';
+        svgPreviewElement.innerHTML = '<div style="color: red; text-align: center;">Error: Font data not found. Make sure Base64 data is correctly entered in embeddedFontData.</div>';
         return;
       }
       
-      // Basic check for missing actual Base64 data (if still placeholder)
       if (fontDataUrl.endsWith("_Zm9udGRhdGE==") && fontDataUrl.startsWith("data:application/font-woff2;base64,")) {
-          console.warn(`Placeholder Base64 data detected for font: ${font}. Preview might not render correctly in all browsers if actual font data is not embedded.`);
+          console.warn(`Placeholder Base64 data detected for font: ${font}. Preview might not render correctly if actual font data is not embedded.`);
+          // Optionally, provide a visual cue in the preview for placeholder data
+          // svgPreviewElement.innerHTML = '<div style="color: orange; text-align: center;">Preview may be inaccurate: Placeholder font data detected.</div>';
+          // return; // Or allow preview to attempt rendering
       }
-
 
       const svgContent = generateSvgContent(text, font, fontDataUrl);
       svgPreviewElement.innerHTML = svgContent;
@@ -222,8 +230,8 @@
       const customerName = document.getElementById('customerInput').value;
       const itemDescription = document.getElementById('descInput').value;
       const engravingLocation = document.getElementById('locationInput').value;
-      const text = textInputElement.value; // Get from the same input
-      const font = fontSelectorElement.value; // Get from the same selector
+      const text = textInputElement.value;
+      const font = fontSelectorElement.value;
       const fontDataUrl = embeddedFontData[font];
 
       if (!text || !customerName || !itemDescription || !engravingLocation) {
@@ -236,6 +244,11 @@
         alert("Error: Selected font data is missing. Cannot generate SVG.");
         return;
       }
+      if (fontDataUrl.endsWith("_Zm9udGRhdGE==") && fontDataUrl.startsWith("data:application/font-woff2;base64,")) {
+        if (!confirm("Warning: Placeholder font data detected. The downloaded SVG may not render correctly with the selected font. Continue?")) {
+            return;
+        }
+      }
 
       const fileNameFriendly = (str) => str.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
       const customerPart = fileNameFriendly(customerName) || 'customer';
@@ -243,7 +256,11 @@
       const placementPart = fileNameFriendly(engravingLocation) || 'location';
       const dynamicFilename = `${customerPart}_${descriptionPart}_${placementPart}.svg`;
 
-      const svgForDownload = generateSvgContent(text, font, fontDataUrl); // Re-use SVG generation
+      // For download, we might want to use the original/intended SVG dimensions and font size,
+      // unless the larger preview size is also desired for the final output.
+      // For now, using the same generateSvgContent which uses larger font for consistency.
+      // If you need a different size for download, we'd need another version of generateSvgContent or pass size params.
+      const svgForDownload = generateSvgContent(text, font, fontDataUrl);
 
       const blob = new Blob([svgForDownload], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -251,39 +268,22 @@
       const a = document.createElement("a");
       a.href = url;
       a.download = dynamicFilename;
-      document.body.appendChild(a); // Required for Firefox
+      document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a); // Clean up
-      URL.revokeObjectURL(url); // Clean up blob URL
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-      // Optional: Show a success message (your popup logic can be re-integrated here)
-      // document.getElementById("popupOverlay").style.display = "flex";
       alert("SVG file download initiated: " + dynamicFilename);
+      // Re-integrate your popup logic here if desired
+      // document.getElementById("popupOverlay").style.display = "flex";
     }
 
-    // Event Listeners for live preview
     textInputElement.addEventListener('input', updatePreview);
     fontSelectorElement.addEventListener('change', updatePreview);
 
-    // Initial preview update in case there's pre-filled text (optional)
-    // or to set the default font preview if text is entered first.
-    // updatePreview(); // You can call this on page load if desired.
-
-    // Your existing popup logic (can be re-integrated with handleSubmit)
-    /*
-    function closePopup() {
-      document.getElementById("popupOverlay").style.display = "none";
-    }
-    */
-    // Make sure your popup HTML is still in the body if you re-enable this:
-    /*
-    <div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;justify-content:center;align-items:center;">
-      <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;">
-        <p style="font-size:1.25rem;margin:0;">Hey, you did it!</p>
-        <button onclick="closePopup()" style="margin-top:1rem;padding:0.5rem 1rem;border:none;background:#3b82f6;color:white;border-radius:6px;font-weight:bold;cursor:pointer;">OK</button>
-      </div>
-    </div>
-    */
+    // function closePopup() {
+    //   document.getElementById("popupOverlay").style.display = "none";
+    // }
   </script>
   </body>
 </html>
