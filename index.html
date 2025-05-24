@@ -148,11 +148,24 @@
     };
 
     function handleSubmit() {
-  const text = document.getElementById('textInput').value;
-  const font = document.getElementById('fontSelector').value;
-  const fontData = embeddedFontData[font];
+      const customerName = document.getElementById('customerInput').value;
+      const itemDescription = document.getElementById('descInput').value;
+      const engravingLocation = document.getElementById('locationInput').value;
+      const text = document.getElementById('textInput').value;
+      const font = document.getElementById('fontSelector').value;
+      const fontData = embeddedFontData[font];
 
-  const svg = `<?xml version="1.0" standalone="no"?>
+      // Create a filename-friendly string
+      // Replace spaces with underscores and remove characters not suitable for filenames
+      const fileNameFriendly = (str) => str.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
+
+      const customerPart = fileNameFriendly(customerName) || 'customer';
+      const descriptionPart = fileNameFriendly(itemDescription) || 'item';
+      const placementPart = fileNameFriendly(engravingLocation) || 'location';
+
+      const dynamicFilename = `${customerPart}_${descriptionPart}_${placementPart}.svg`;
+
+      const svg = `<?xml version="1.0" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="200">
   <style>
     @font-face {
@@ -168,39 +181,20 @@
   <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${text}</text>
 </svg>`;
 
-  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "engraving.svg";
-  a.click();
-
-  document.getElementById("svgPreview").innerHTML = svg;
-  document.getElementById("popupOverlay").style.display = "flex";
-}
-
-function closePopup() {
-  document.getElementById("popupOverlay").style.display = "none";
-}
-    text {
-      font-family: '${font}';
-      font-size: 40px;
-      fill: #333;
-    }
-  </style>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${text}</text>
-</svg>`;
-
       const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "engraving.svg";
+      a.download = dynamicFilename; // Use the new dynamic filename here
       a.click();
 
       document.getElementById("svgPreview").innerHTML = svg;
+      document.getElementById("popupOverlay").style.display = "flex";
+    }
+
+    function closePopup() {
+      document.getElementById("popupOverlay").style.display = "none";
     }
   </script>
 <div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;justify-content:center;align-items:center;">
