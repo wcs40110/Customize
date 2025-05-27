@@ -3,202 +3,227 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Custom SVG Text Generator</title>
+<title>SVG Text Generator</title>
 <style>
+  * { box-sizing: border-box; }
+
   body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0;
+    padding: 20px;
+    background: #f4f4f4;
+    color: #333;
   }
+
+  .generator-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
   label {
     display: block;
-    margin: 10px 0 5px;
+    font-weight: bold;
+    margin-bottom: 5px;
   }
-  input, select, button, textarea {
-    padding: 8px;
+
+  input, select, textarea, button {
     width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
   }
+
+  button {
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+
   #svgPreview {
     margin-top: 20px;
     border: 1px solid #ccc;
-    width: 600px;
-    height: 150px;
+    border-radius: 8px;
+    background: #fff;
+    width: 100%;
+    height: auto;
+    min-height: 150px;
+    text-align: center;
+    padding: 10px;
   }
+
   #popupOverlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     display: none;
     justify-content: center;
     align-items: center;
-    color: white;
     font-size: 1.4em;
+    color: white;
     z-index: 1000;
+  }
+
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+    .generator-container {
+      padding: 15px;
+    }
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
 </head>
 <body>
 
-<h1>Custom SVG Text Generator</h1>
+<div class="generator-container">
+  <h1>Custom SVG Text Generator</h1>
+  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
+    <div class="form-group">
+      <label for="customerInput">Customer Name *</label>
+      <input type="text" id="customerInput" required />
+    </div>
 
-<form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
-  <label for="customerInput">Customer Name *</label>
-  <input type="text" id="customerInput" required />
+    <div class="form-group">
+      <label for="descInput">Item Description *</label>
+      <input type="text" id="descInput" required />
+    </div>
 
-  <label for="descInput">Item Description *</label>
-  <input type="text" id="descInput" required />
+    <div class="form-group">
+      <label for="locationInput">Engraving Location *</label>
+      <input type="text" id="locationInput" required />
+    </div>
 
-  <label for="locationInput">Engraving Location *</label>
-  <input type="text" id="locationInput" required />
+    <div class="form-group">
+      <label for="textInput">Text to Engrave *</label>
+      <textarea id="textInput" rows="2" required></textarea>
+    </div>
 
-  <label for="textInput">Text to Engrave *</label>
-  <textarea id="textInput" rows="2" placeholder="Enter your text here" required></textarea>
+    <div class="form-group">
+      <label for="fontSelector">Choose Font *</label>
+      <select id="fontSelector" required>
+        <option value="Satisfy">Satisfy</option>
+        <option value="Righteous">Righteous</option>
+        <option value="Grand Hotel">Grand Hotel</option>
+        <option value="Short Stack">Short Stack</option>
+        <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+        <option value="Ribeye Marrow">Ribeye Marrow</option>
+      </select>
+    </div>
 
-  <label for="fontSelector">Choose Font *</label>
-  <select id="fontSelector" required>
-    <option value="Satisfy">Satisfy</option>
-    <option value="Righteous">Righteous</option>
-    <option value="Grand Hotel">Grand Hotel</option>
-    <option value="Short Stack">Short Stack</option>
-    <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-    <option value="Ribeye Marrow">Ribeye Marrow</option>
-  </select>
+    <button type="submit">Generate & Download SVG</button>
+  </form>
 
-  <button type="submit" style="margin-top: 15px;">Generate and Download SVG</button>
-</form>
-
-<div id="svgPreview">Enter text and select a font to see a preview.</div>
+  <div id="svgPreview">SVG preview will appear here...</div>
+</div>
 
 <div id="popupOverlay" onclick="this.style.display='none'">
-  SVG file downloaded! Click anywhere to close.
+  SVG downloaded! Click anywhere to dismiss.
 </div>
 
 <script>
-  const fontSelectorElement = document.getElementById('fontSelector');
-  const textInputElement = document.getElementById('textInput');
-  const svgPreviewElement = document.getElementById('svgPreview');
-
- const fontUrls = {
+const fontUrls = {
   "Satisfy": "https://tiny-florentine-e8dbd9.netlify.app/satisfy-regular.woff2",
   "Righteous": "https://tiny-florentine-e8dbd9.netlify.app/righteous-v17-latin-regular.woff2",
   "Grand Hotel": "https://tiny-florentine-e8dbd9.netlify.app/grand-hotel-v19-latin-regular.woff2",
   "Short Stack": "https://tiny-florentine-e8dbd9.netlify.app/short-stack-v15-latin-regular.woff2",
   "Love Ya Like A Sister": "https://tiny-florentine-e8dbd9.netlify.app/love-ya-like-a-sister-v22-latin-regular.woff2",
   "Ribeye Marrow": "https://tiny-florentine-e8dbd9.netlify.app/ribeye-marrow-v24-latin-regular.woff2"
-  };
+};
 
-  let loadedFont = null;
-  let currentFontName = null;
+let loadedFont = null;
+let currentFontName = null;
 
-  async function loadFont(fontName) {
-    if (fontName === currentFontName && loadedFont) return;
-    const fontUrl = fontUrls[fontName];
-    if (!fontUrl) {
-      console.error("Font URL not found for:", fontName);
-      loadedFont = null;
-      currentFontName = null;
-      return;
-    }
-    try {
-      loadedFont = await opentype.load(fontUrl);
-      currentFontName = fontName;
-    } catch (e) {
-      console.error("Failed to load font:", e);
-      loadedFont = null;
-      currentFontName = null;
-    }
+async function loadFont(fontName) {
+  if (fontName === currentFontName && loadedFont) return;
+  const url = fontUrls[fontName];
+  loadedFont = await opentype.load(url);
+  currentFontName = fontName;
+}
+
+function generateSvgPath(text, font, size = 80) {
+  const path = font.getPath(text, 0, size, size);
+  return path.toPathData(2);
+}
+
+function generateSvg(text, fontName) {
+  if (!loadedFont) return "Loading font...";
+  const fontSize = 80;
+  const width = 600;
+  const height = 150;
+  const pathData = generateSvgPath(text, loadedFont, fontSize);
+  const textWidth = loadedFont.getAdvanceWidth(text, fontSize);
+  const x = (width - textWidth) / 2;
+  const y = (height / 2) + (fontSize / 3);
+
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <g transform="translate(${x}, ${y})">
+        <path d="${pathData}" fill="#333" />
+      </g>
+    </svg>
+  `;
+}
+
+async function updatePreview() {
+  const text = document.getElementById('textInput').value.trim();
+  const fontName = document.getElementById('fontSelector').value;
+  if (!text) {
+    document.getElementById('svgPreview').innerHTML = "Enter text above to preview.";
+    return;
+  }
+  await loadFont(fontName);
+  document.getElementById('svgPreview').innerHTML = generateSvg(text, fontName);
+}
+
+async function handleSubmit() {
+  const customer = document.getElementById('customerInput').value.trim();
+  const desc = document.getElementById('descInput').value.trim();
+  const location = document.getElementById('locationInput').value.trim();
+  const text = document.getElementById('textInput').value.trim();
+  const fontName = document.getElementById('fontSelector').value;
+
+  if (!customer || !desc || !location || !text) {
+    alert("Please fill in all fields.");
+    return;
   }
 
-  function generateSvgPath(text, font, fontSize = 80) {
-    if (!font || !text.trim()) return '';
+  await loadFont(fontName);
+  const svg = generateSvg(text, fontName);
+  const filename = `${[customer, desc, location].map(v => v.replace(/\s+/g, "_").replace(/[^\w.-]/g, '')).join("_")}.svg`;
 
-    let x = 0;
-    const y = fontSize;
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 
-    const path = font.getPath(text, x, y, fontSize);
+  document.getElementById('popupOverlay').style.display = 'flex';
+}
 
-    return path.toPathData(2);
-  }
-
-  function generateSvgContentWithPaths(text, fontName) {
-    if (!text.trim()) {
-      return 'Enter text and select a font to see a preview.';
-    }
-    if (!loadedFont) {
-      return 'Loading font...';
-    }
-
-    const fontSize = 80;
-    const svgWidth = 600;
-    const svgHeight = 150;
-
-    const pathData = generateSvgPath(text, loadedFont, fontSize);
-    const textWidth = loadedFont.getAdvanceWidth(text, fontSize);
-
-    const translateX = (svgWidth - textWidth) / 2;
-    const translateY = (svgHeight / 2) + (fontSize / 3);
-
-    return `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
-        <g transform="translate(${translateX}, ${translateY})">
-          <path d="${pathData}" fill="#333" />
-        </g>
-      </svg>
-    `;
-  }
-
-  async function updatePreview() {
-    const text = textInputElement.value;
-    const fontName = fontSelectorElement.value;
-
-    if (fontName !== currentFontName || !loadedFont) {
-      await loadFont(fontName);
-    }
-
-    svgPreviewElement.innerHTML = generateSvgContentWithPaths(text, fontName);
-  }
-
-  async function handleSubmit() {
-    const customerName = document.getElementById('customerInput').value.trim();
-    const itemDescription = document.getElementById('descInput').value.trim();
-    const engravingLocation = document.getElementById('locationInput').value.trim();
-    const text = textInputElement.value.trim();
-    const fontName = fontSelectorElement.value;
-
-    if (!customerName || !itemDescription || !engravingLocation || !text) {
-      alert("Please fill out all required fields before submitting.");
-      return;
-    }
-
-    if (fontName !== currentFontName || !loadedFont) {
-      await loadFont(fontName);
-    }
-
-    const filenameSafe = (str) => str.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
-    const filename = `${filenameSafe(customerName)}_${filenameSafe(itemDescription)}_${filenameSafe(engravingLocation)}.svg`;
-
-    const svgContent = generateSvgContentWithPaths(text, fontName);
-    const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    document.getElementById('popupOverlay').style.display = 'flex';
-  }
-
-  textInputElement.addEventListener('input', updatePreview);
-  fontSelectorElement.addEventListener('change', updatePreview);
-
-  // Load initial font and preview
-  window.addEventListener('DOMContentLoaded', updatePreview);
+document.getElementById('textInput').addEventListener('input', updatePreview);
+document.getElementById('fontSelector').addEventListener('change', updatePreview);
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('fontSelector').value = "Satisfy";
+  updatePreview();
+});
 </script>
 
 </body>
