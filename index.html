@@ -81,7 +81,7 @@
       min-height: 80px; /* Minimum height for textarea */
     }
 
-    button[type="submit"] { /* Changed from button[type="submit"] for specificity */
+    button[type="submit"] {
       width: 100%;
       padding: 15px; /* Increased padding */
       margin-top: 30px; /* Increased margin */
@@ -175,16 +175,16 @@
 
   <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
     <label for="customerInput">Customer Name</label>
-    <input type="text" id="customerInput" required>
+    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required>
 
     <label for="descInput">Item Description</label>
-    <input type="text" id="descInput" required>
+    <input type="text" id="descInput" placeholder="ie. black cat" required>
 
     <label for="locationInput">Engraving Location</label>
-    <input type="text" id="locationInput" required>
+    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required>
 
     <label for="textInput">Text to Engrave</label>
-    <textarea id="textInput" rows="3" required></textarea>
+    <textarea id="textInput" rows="3" placeholder="Enter text for engraving..." required></textarea>
 
     <label for="fontSelector">Font</label>
     <select id="fontSelector">
@@ -196,9 +196,10 @@
       <option value="Ribeye Marrow">Ribeye Marrow</option>
     </select>
 
-    <button type="submit">Submit</button> </form>
+    </form>
 
-  <div id="svgPreview">Enter text above to preview.</div> </div>
+  <div id="svgPreview">Enter text above to preview.</div>
+  <button type="submit" form="customForm">Submit</button> </div>
 
 <div id="popupOverlay" onclick="this.style.display='none'">
   <div>Hey, you did it! Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>
@@ -258,11 +259,13 @@
       throw new Error(errorMsg);
     }
 
-    const absoluteUrl = new URL(relativeUrl, document.baseURI).href;
-    console.log(`[loadFont] Fetching URL (resolved): ${absoluteUrl}`);
+    // Construct absolute URL based on window.location.origin, assuming assets are at the root
+    // This is to handle environments (like blob URL previews) where document.baseURI might be problematic
+    const absoluteUrl = `${window.location.origin}/${relativeUrl.replace(/^\.\//, '')}`;
+    console.log(`[loadFont] Fetching URL (constructed absolute): ${absoluteUrl}`);
 
     try {
-      const res = await fetch(absoluteUrl);
+      const res = await fetch(absoluteUrl); // Use the constructed absolute URL
       console.log(`[loadFont] Fetch response for ${fontName}: Status ${res.status}, OK: ${res.ok}`);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status} for ${absoluteUrl}. Ensure font file exists at this path and was deployed.`);
