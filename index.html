@@ -259,13 +259,16 @@
       throw new Error(errorMsg);
     }
 
-    // Construct absolute URL based on window.location.origin, assuming assets are at the root
-    // This is to handle environments (like blob URL previews) where document.baseURI might be problematic
+    // Construct absolute URL based on window.location.origin, assuming assets are at the root.
+    // This is correct for the deployed Netlify site.
+    // If a preview environment (like *.scf.usercontent.goog) doesn't serve assets
+    // from its own origin's root, it will result in a 404 in that preview,
+    // which is an environment-specific issue.
     const absoluteUrl = `${window.location.origin}/${relativeUrl.replace(/^\.\//, '')}`;
     console.log(`[loadFont] Fetching URL (constructed absolute): ${absoluteUrl}`);
 
     try {
-      const res = await fetch(absoluteUrl); // Use the constructed absolute URL
+      const res = await fetch(absoluteUrl); 
       console.log(`[loadFont] Fetch response for ${fontName}: Status ${res.status}, OK: ${res.ok}`);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status} for ${absoluteUrl}. Ensure font file exists at this path and was deployed.`);
@@ -355,7 +358,7 @@
   async function handleSubmit() {
     console.log("[handleSubmit] Form submitted.");
     const popup = document.getElementById('popupOverlay');
-    const popupTextElement = popup.querySelector('div'); // Get the inner div for text
+    const popupTextElement = popup.querySelector('div'); 
 
      if (typeof opentype === 'undefined') {
         if (popupTextElement) popupTextElement.innerHTML = 'Font processing library not loaded. Cannot generate SVG.<br><small>(Click to dismiss)</small>';
@@ -402,7 +405,6 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         console.log(`[handleSubmit] SVG downloaded as ${safeFileName}`);
-        // Updated popup text
         if (popupTextElement) popupTextElement.innerHTML = `Hey, you did it! Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>`;
         popup.style.display = 'flex';
     } catch (err) {
