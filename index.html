@@ -1,13 +1,61 @@
-function generateSvgContent(text, font, fontDataUrl) {
-  if (!text.trim()) {
-    return 'Enter text and select a font to see a preview.';
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shady Creek Design Co</title>
+  <style>
+    @font-face {
+      font-family: 'Satisfy';
+      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+    }
+    @font-face {
+      font-family: 'Righteous';
+      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+    }
+    @font-face {
+      font-family: 'Grand Hotel';
+      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+    }
+    @font-face {
+      font-family: 'Short Stack';
+      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+    }
+    @font-face {
+      font-family: 'Love Ya Like A Sister';
+      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+    }
+    @font-face {
+      font-family: 'Ribeye Marrow';
+      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-family: 'Grand Hotel';">Shady Creek Design Co</h1>
+  <div>
+    <label>Text: <input id="textInput" /></label>
+    <label>Font:
+      <select id="fontSelector">
+        <option value="Satisfy">Satisfy</option><option value="Righteous">Righteous</option><option value="Grand Hotel">Grand Hotel</option><option value="Short Stack">Short Stack</option><option value="Love Ya Like A Sister">Love Ya Like A Sister</option><option value="Ribeye Marrow">Ribeye Marrow</option>
+      </select>
+    </label>
+  </div>
+  <div id="svgPreview">Enter text and select a font to see a preview.</div>
+  <script>
+    const embeddedFontData = {
+      "Satisfy": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
+      "Righteous": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
+      "Grand Hotel": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
+      "Short Stack": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
+      "Love Ya Like A Sister": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
+      "Ribeye Marrow": "data:application/font-woff2;base64,d09GMgABAAAAAA=="
+    };
 
-  const svgHeight = 150;
-  const fontSize = 80;
-
-  return `
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${svgHeight}" viewBox="0 0 600 ${svgHeight}">
+    function generateSvgContent(text, font, fontDataUrl) {
+      if (!text.trim()) return 'Enter text and select a font to see a preview.';
+      return `
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="150" viewBox="0 0 600 150">
   <style>
     @font-face {
       font-family: '${font}';
@@ -15,7 +63,7 @@ function generateSvgContent(text, font, fontDataUrl) {
     }
     text {
       font-family: '${font}';
-      font-size: ${fontSize}px;
+      font-size: 80px;
       fill: #333;
       text-anchor: middle;
       dominant-baseline: middle;
@@ -23,4 +71,18 @@ function generateSvgContent(text, font, fontDataUrl) {
   </style>
   <text x="50%" y="50%">${text}</text>
 </svg>`;
-}
+    }
+
+    function updatePreview() {
+      const text = document.getElementById('textInput').value;
+      const font = document.getElementById('fontSelector').value;
+      const fontDataUrl = embeddedFontData[font];
+      document.getElementById('svgPreview').innerHTML = generateSvgContent(text, font, fontDataUrl);
+    }
+
+    document.getElementById('textInput').addEventListener('input', updatePreview);
+    document.getElementById('fontSelector').addEventListener('change', updatePreview);
+    window.addEventListener('DOMContentLoaded', updatePreview);
+  </script>
+</body>
+</html>
