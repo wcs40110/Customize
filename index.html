@@ -5,51 +5,191 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shady Creek Design Co</title>
   <style>
+    :root {
+      --accent: #e879f9;
+      --background: #fffafc;
+      --primary: #3b82f6;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --sapphire: #0F52BA;
+    }
+
     @font-face {
       font-family: 'Satisfy';
-      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+      src: url("data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==") format("woff2");
     }
     @font-face {
       font-family: 'Righteous';
-      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+      src: url("data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh") format("woff2");
     }
     @font-face {
       font-family: 'Grand Hotel';
-      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+      src: url("data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=") format("woff2");
     }
     @font-face {
       font-family: 'Short Stack';
-      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+      src: url("data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=") format("woff2");
     }
     @font-face {
       font-family: 'Love Ya Like A Sister';
-      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+      src: url("data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh") format("woff2");
     }
     @font-face {
       font-family: 'Ribeye Marrow';
-      src: url("data:application/font-woff2;base64,d09GMgABAAAAAA==") format("woff2");
+      src: url("data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ==") format("woff2");
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--background);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    h1 {
+      margin-top: 2rem;
+      font-size: 1.75rem;
+      text-align: center;
+      font-family: 'Grand Hotel', cursive;
+      color: var(--sapphire);
+    }
+
+    .instructions {
+      font-size: 1rem;
+      color: #444;
+      text-align: center;
+      margin: 0.5rem 1rem 1.5rem;
+      max-width: 410px;
+    }
+
+    form {
+      background: white url('https://www.transparenttextures.com/patterns/flowers.png') repeat;
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 95vw;
+      max-width: 420px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    input, select, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .action-button {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      border: none;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .action-button:hover {
+      background: #2563eb;
+    }
+
+    #svgPreview {
+      margin: 1.5rem 0 0.5rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 1rem;
+      width: 95vw;
+      max-width: 400px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
+
+    .submit-button-container {
+      width: 95vw;
+      max-width: 420px;
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 1.25rem;
+      }
+      form, #svgPreview, .submit-button-container {
+        max-width: 98vw;
+      }
+      #svgPreview {
+        min-height: 90px;
+      }
+      .action-button {
+        max-width: 95vw;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 style="font-family: 'Grand Hotel';">Shady Creek Design Co</h1>
-  <div>
-    <label>Text: <input id="textInput" /></label>
-    <label>Font:
-      <select id="fontSelector">
-        <option value="Satisfy">Satisfy</option><option value="Righteous">Righteous</option><option value="Grand Hotel">Grand Hotel</option><option value="Short Stack">Short Stack</option><option value="Love Ya Like A Sister">Love Ya Like A Sister</option><option value="Ribeye Marrow">Ribeye Marrow</option>
-      </select>
-    </label>
+  <h1>Shady Creek Design Co</h1>
+  <div class="instructions">
+    If you have more than one item being engraved please fill out separate forms.<br>
+    Preview will update as you type and select fonts.
   </div>
+  <form id="svgForm" onsubmit="event.preventDefault(); handleSubmit();">
+    <label for="customerInput">Customer Name:</label>
+    <input type="text" id="customerInput" required />
+
+    <label for="descInput">Item to be Engraved:</label>
+    <input type="text" id="descInput" required />
+
+    <label for="locationInput">Engraving Location:</label>
+    <input type="text" id="locationInput" required />
+
+    <label for="textInput">Customization:</label>
+    <input type="text" id="textInput" required />
+
+    <label for="fontSelector">Font:</label>
+    <select id="fontSelector">
+      <option value="Satisfy">Satisfy</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Grand Hotel">Grand Hotel</option>
+      <option value="Short Stack">Short Stack</option>
+      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow">Ribeye Marrow</option>
+    </select>
+  </form>
+
   <div id="svgPreview">Enter text and select a font to see a preview.</div>
+
+  <div class="submit-button-container">
+    <button type="submit" class="action-button" onclick="handleSubmit()">SUBMIT</button>
+  </div>
+
   <script>
     const embeddedFontData = {
-      "Satisfy": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
-      "Righteous": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
-      "Grand Hotel": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
-      "Short Stack": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
-      "Love Ya Like A Sister": "data:application/font-woff2;base64,d09GMgABAAAAAA==",
-      "Ribeye Marrow": "data:application/font-woff2;base64,d09GMgABAAAAAA=="
+      "Satisfy": "data:application/font-woff2;base64,U2F0aXNmeV9mb250ZGF0YQ==",
+      "Righteous": "data:application/font-woff2;base64,UmlnaHRlb3VzX2ZvbnRkYXRh",
+      "Grand Hotel": "data:application/font-woff2;base64,R3JhbmQgSG90ZWxfZm9udGRhdGE=",
+      "Short Stack": "data:application/font-woff2;base64,U2hvcnQgU3RhY2tfZm9udGRhdGE=",
+      "Love Ya Like A Sister": "data:application/font-woff2;base64,TG92ZSBZYSBMaWtlIEEgU2lzdGVyX2ZvbnRkYXRh",
+      "Ribeye Marrow": "data:application/font-woff2;base64,UmliZXllIE1hcnJvd19mb250ZGF0YQ=="
     };
 
     function generateSvgContent(text, font, fontDataUrl) {
@@ -80,9 +220,33 @@
       document.getElementById('svgPreview').innerHTML = generateSvgContent(text, font, fontDataUrl);
     }
 
+    function handleSubmit() {
+      const name = document.getElementById('customerInput').value;
+      const item = document.getElementById('descInput').value;
+      const loc = document.getElementById('locationInput').value;
+      const text = document.getElementById('textInput').value;
+      const font = document.getElementById('fontSelector').value;
+      const fontDataUrl = embeddedFontData[font];
+      const fileName = `${name.replace(/\s+/g,'_')}_${item.replace(/\s+/g,'_')}_${loc.replace(/\s+/g,'_')}.svg`;
+      const blob = new Blob([generateSvgContent(text, font, fontDataUrl)], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = fileName;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      document.getElementById("popupOverlay").style.display = "flex";
+    }
+
     document.getElementById('textInput').addEventListener('input', updatePreview);
     document.getElementById('fontSelector').addEventListener('change', updatePreview);
     window.addEventListener('DOMContentLoaded', updatePreview);
   </script>
+
+  <div id="popupOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;justify-content:center;align-items:center;">
+    <div style="background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.2);text-align:center;">
+      <p style="font-size:1.25rem;margin:0;">Hey you did it! Your customization is now ready to be engraved.</p>
+      <button onclick="document.getElementById('popupOverlay').style.display='none'" style="margin-top:1rem;padding:0.5rem 1rem;border:none;background:#3b82f6;color:white;border-radius:6px;font-weight:bold;cursor:pointer;">OK</button>
+    </div>
+  </div>
 </body>
 </html>
