@@ -1,8 +1,4 @@
-<script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
-</head>
-<body>
-<script>
-  // IMMEDIATE CHECK FOR OPENTYPE.JS
+<script // IMMEDIATE CHECK FOR OPENTYPE.JS
   if (typeof opentype === 'undefined') {
     console.error("CRITICAL: opentype.js library did NOT load!");
     alert("CRITICAL: opentype.js did NOT load! Font features will not work. Check the browser console (Network tab) for issues loading 'opentype.min.js' from cdn.jsdelivr.net.");
@@ -22,13 +18,15 @@
     console.log("SUCCESS: opentype.js library seems to be loaded.");
   }
 
+  // Updated fontUrls to use relative paths
+  // Ensure these filenames EXACTLY match the files in your repository (case-sensitive)
   const fontUrls = {
-    "Satisfy": "https://tiny-florentine-e8dbd9.netlify.app/satisfy-regular.ttf",
-    "Righteous": "https://tiny-florentine-e8dbd9.netlify.app/righteous-regular.ttf",
-    "Grand Hotel": "https://tiny-florentine-e8dbd9.netlify.app/grandhotel-regular.ttf",
-    "Short Stack": "https://tiny-florentine-e8dbd9.netlify.app/shortstack-regular.ttf",
-    "Love Ya Like A Sister": "https://tiny-florentine-e8dbd9.netlify.app/loveyalikeasister-regular.ttf",
-    "Ribeye Marrow": "https://tiny-florentine-e8dbd9.netlify.app/ribeyemarrow-regular.ttf"
+    "Satisfy": "./Satisfy-Regular.ttf",
+    "Righteous": "./Righteous-Regular.ttf",
+    "Grand Hotel": "./GrandHotel-Regular.ttf",
+    "Short Stack": "./ShortStack-Regular.ttf",
+    "Love Ya Like A Sister": "./LoveYaLikeASister-Regular.ttf",
+    "Ribeye Marrow": "./RibeyeMarrow-Regular.ttf"
   };
 
   let loadedFont = null;
@@ -61,31 +59,38 @@
       const res = await fetch(url);
       console.log(`[loadFont] Fetch response for ${fontName}: Status ${res.status}, OK: ${res.ok}`);
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status} for ${url}`);
+        throw new Error(`HTTP error! status: ${res.status} for ${url}. Ensure font file exists at this relative path and was deployed.`);
       }
       const fontBuffer = await res.arrayBuffer();
       console.log(`[loadFont] Font buffer received for ${fontName}, length: ${fontBuffer.byteLength} bytes.`);
-      if (fontBuffer.byteLength < 100) { // Arbitrary small number, real fonts are larger
-          console.warn(`[loadFont] WARNING: Font buffer for ${fontName} is very small. Is the font file correct/complete?`);
+      if (fontBuffer.byteLength < 100) { 
+          console.warn(`[loadFont] WARNING: Font buffer for ${fontName} is very small (${fontBuffer.byteLength} bytes). Is the font file correct/complete?`);
       }
       loadedFont = opentype.parse(fontBuffer);
       console.log(`[loadFont] Font parsed successfully: ${fontName}`);
       currentFontName = fontName;
     } catch (error) {
       console.error(`[loadFont] Failed to load or parse font '${fontName}':`, error);
-      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Error loading font '${fontName}': ${error.message}. Check console for more details.</div>`;
-      throw error; // Re-throw to be caught by updatePreview or handleSubmit
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Error loading font '${fontName}': ${error.message}. Check console for details.</div>`;
+      throw error; 
     }
   }
 
   function createSvg(text, font) {
-    // ... (rest of your createSvg function is likely fine)
     const fontSize = 80;
     const width = 600;
     const height = 150;
-    console.log(`[createSvg] Creating SVG for text "${text}" with font ${font.names.fontFamily.en}`);
-    const path = font.getPath(text, 0, 0, fontSize); // Assuming baseline at y=0
-    const pathData = path.toPathData(2);
+    
+    let fontFamilyName = "Unknown";
+    if (font && font.names && font.names.fontFamily && font.names.fontFamily.en) {
+        fontFamilyName = font.names.fontFamily.en;
+    } else if (font && font.familyName) { // Fallback if opentype.js structure is slightly different for some fonts
+        fontFamilyName = font.familyName;
+    }
+    console.log(`[createSvg] Creating SVG for text "${text}" with font ${fontFamilyName}`);
+    
+    const path = font.getPath(text, 0, 0, fontSize); 
+    const pathData = path.toPathData(2); 
     const svgContent = `
       <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 -70 ${width} ${height}">
         <path d="${pathData}" fill="black"/>
@@ -107,28 +112,32 @@
       return;
     }
 
-    preview.innerHTML = `Loading font '${fontName}' and generating preview...`; // Feedback during load
+    preview.innerHTML = `Loading font '${fontName}' and generating preview...`; 
     console.log(`[updatePreview] Text: "${text}", Font: "${fontName}"`);
     try {
       await loadFont(fontName);
+      if (!loadedFont) { 
+          console.error("[updatePreview] loadedFont is null after await loadFont(fontName).");
+          throw new Error("Font could not be loaded or parsed successfully.");
+      }
       const svgMarkup = createSvg(text, loadedFont);
       preview.innerHTML = svgMarkup;
       console.log("[updatePreview] SVG preview updated.");
     } catch (err) {
       console.error("[updatePreview] Error during preview update:", err);
-      // loadFont already updates the preview on its own error, but this is a fallback
-      if (!preview.innerHTML.includes("Error loading font")) { // Avoid overwriting specific error from loadFont
+      if (preview.innerHTML.includes("Loading font")) { 
         preview.innerHTML = `<div style="color: red;">Failed to update preview: ${err.message}. Check console.</div>`;
       }
     }
   }
 
   async function handleSubmit() {
-    // ... (your handleSubmit function, consider adding logs here too if needed)
     console.log("[handleSubmit] Form submitted.");
-    // ...
-    const text = document.getElementById('textInput').value.trim(); // Ensure text is defined
-    const fontName = document.getElementById('fontSelector').value; // Ensure fontName is defined
+    const customer = document.getElementById('customerInput').value.trim();
+    const desc = document.getElementById('descInput').value.trim();
+    const location = document.getElementById('locationInput').value.trim();
+    const text = document.getElementById('textInput').value.trim();
+    const fontName = document.getElementById('fontSelector').value;
 
     if (!text) {
         alert("Enter some text to generate SVG.");
@@ -137,23 +146,25 @@
     }
 
     try {
-        await loadFont(fontName); // Make sure font is loaded
-        // ... rest of your handleSubmit
-        const customer = document.getElementById('customerInput').value.trim();
-        const desc = document.getElementById('descInput').value.trim();
-        const location = document.getElementById('locationInput').value.trim();
+        await loadFont(fontName); 
+        if (!loaded.Font) { 
+            console.error("[handleSubmit] loadedFont is null after await loadFont(fontName).");
+            throw new Error("Font could not be loaded or parsed successfully for SVG generation.");
+        }
         const svgMarkup = createSvg(text, loadedFont);
 
-        const safeFileName = [customer, desc, location]
+        const safeFileNameBase = [customer, desc, location]
             .map(s => s.replace(/\s+/g, "_").replace(/[^\w.-]/g, ''))
-            .filter(s => s) // Remove empty parts
-            .join("_") + (customer || desc || location ? "_" : "") + "engraving.svg"; // Ensure a base name if all are empty
+            .filter(s => s) 
+            .join("_");
+        
+        const safeFileName = safeFileNameBase ? `${safeFileNameBase}_engraving.svg` : "custom_engraving.svg";
 
         const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = safeFileName || "custom_engraving.svg"; // Fallback filename
+        a.download = safeFileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -171,7 +182,7 @@
   document.getElementById('fontSelector').addEventListener('change', updatePreview);
   window.addEventListener('DOMContentLoaded', () => {
     console.log("[DOMContentLoaded] Page loaded, initial updatePreview call.");
-    updatePreview(); // Initial call
+    updatePreview(); 
   });
 
 </script>
