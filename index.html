@@ -1,270 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shady Creek Design Co</title>
-  <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Ribeye+Marrow&family=Righteous&family=Satisfy&family=Short+Stack&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --accent: #e879f9;
-      --background: #fffafc;
-      --primary: #3b82f6;
-      --shadow: rgba(0, 0, 0, 0.1);
-      --sapphire: #0F52BA;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--background);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding-bottom: 4rem;
-    }
-
-    h1 {
-      margin-top: 2rem;
-      font-size: 1.75rem;
-      text-align: center;
-      font-family: 'Grand Hotel', cursive;
-      color: var(--sapphire);
-    }
-
-    .instructions {
-      font-size: 1rem;
-      color: #444;
-      text-align: center;
-      margin: 0.5rem 1rem 1.5rem;
-      max-width: 410px;
-    }
-
-    form {
-      background: white url('https://www.transparenttextures.com/patterns/flowers.png') repeat;
-      padding: 2rem 1.5rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 95vw;
-      max-width: 420px;
-    }
-
-    label {
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    input, select, button {
-      font-size: 1rem;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    .action-button {
-      background: var(--primary);
-      color: white;
-      font-weight: bold;
-      border: none;
-      margin-top: 0.5rem;
-      cursor: pointer;
-      transition: background 0.2s;
-      width: 100%;
-      max-width: 420px;
-    }
-
-    .action-button:hover {
-      background: #2563eb;
-    }
-
-    #svgPreview {
-      margin: 1.5rem 0 0.5rem;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px var(--shadow);
-      padding: 1rem;
-      width: 95vw;
-      max-width: 400px;
-      min-height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      word-break: break-word;
-    }
-
-    .submit-button-container {
-      width: 95vw;
-      max-width: 420px;
-      display: flex;
-      justify-content: center;
-      margin-top: 1rem;
-    }
-
-    @media (max-width: 500px) {
-      h1 {
-        font-size: 1.25rem;
-      }
-      form, #svgPreview, .submit-button-container {
-        max-width: 98vw;
-      }
-      #svgPreview {
-        max-width: 95vw;
-        min-height: 90px;
-      }
-      .action-button {
-        max-width: 95vw;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Custom SVG Text Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  label {
+    display: block;
+    margin: 10px 0 5px;
+  }
+  input, select, button, textarea {
+    padding: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+  }
+  #svgPreview {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    width: 600px;
+    height: 150px;
+  }
+  #popupOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.4em;
+    z-index: 1000;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
 </head>
 <body>
-  <h1>Shady Creek Design Co</h1>
-  <div class="instructions">
-    If you have more than one item being engraved please fill out separate forms.<br />
-    Preview will update as you type and select fonts.
-  </div>
-  <form id="svgForm">
-    <label for="customerInput">Customer Name:</label>
-    <input type="text" id="customerInput" placeholder="ex John Jacob Jingleheimer Schmidt" required />
 
-    <label for="descInput">Item to be Engraved:</label>
-    <input type="text" id="descInput" placeholder="Describe Item and Color" required />
+<h1>Custom SVG Text Generator</h1>
 
-    <label for="locationInput">Engraving Location:</label>
-    <input type="text" id="locationInput" placeholder="ex Back, Bottom, Sign etc" required />
+<form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
+  <label for="customerInput">Customer Name *</label>
+  <input type="text" id="customerInput" required />
 
-    <label for="textInput">Customization:</label>
-    <input type="text" id="textInput" placeholder="Text to be engraved goes here" required />
+  <label for="descInput">Item Description *</label>
+  <input type="text" id="descInput" required />
 
-    <label for="fontSelector">Font:</label>
-    <select id="fontSelector">
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
-    </select>
-  </form>
+  <label for="locationInput">Engraving Location *</label>
+  <input type="text" id="locationInput" required />
 
-  <div id="svgPreview">Enter text and select a font to see a preview.</div>
+  <label for="textInput">Text to Engrave *</label>
+  <textarea id="textInput" rows="2" placeholder="Enter your text here" required></textarea>
 
-  <div class="submit-button-container">
-    <button type="button" onclick="handleSubmit()" class="action-button">SUBMIT</button>
-  </div>
+  <label for="fontSelector">Choose Font *</label>
+  <select id="fontSelector" required>
+    <option value="Satisfy">Satisfy</option>
+    <option value="Righteous">Righteous</option>
+    <option value="Grand Hotel">Grand Hotel</option>
+    <option value="Short Stack">Short Stack</option>
+    <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+    <option value="Ribeye Marrow">Ribeye Marrow</option>
+  </select>
 
-  <script>
-    const textInputElement = document.getElementById('textInput');
-    const fontSelectorElement = document.getElementById('fontSelector');
-    const svgPreviewElement = document.getElementById('svgPreview');
+  <button type="submit" style="margin-top: 15px;">Generate and Download SVG</button>
+</form>
 
-    function generateSvgContent(text, font) {
-      if (!text.trim()) {
-        return 'Enter text and select a font to see a preview.';
-      }
-      // Use halved sizes for preview
-      const svgHeight = 150;
-      const fontSize = 80;
-      // Return SVG string - font is applied by font-family name (loaded by Google Fonts)
-      return `
-        <svg xmlns="http://www.w3.org/2000/svg" width="600" height="${svgHeight}" viewBox="0 0 600 ${svgHeight}">
-          <text
-            x="50%" y="50%"
-            font-family="${font}"
-            font-size="${fontSize}px"
-            fill="#333"
-            text-anchor="middle"
-            dominant-baseline="middle"
-          >${text}</text>
-        </svg>
-      `;
+<div id="svgPreview">Enter text and select a font to see a preview.</div>
+
+<div id="popupOverlay" onclick="this.style.display='none'">
+  SVG file downloaded! Click anywhere to close.
+</div>
+
+<script>
+  const fontSelectorElement = document.getElementById('fontSelector');
+  const textInputElement = document.getElementById('textInput');
+  const svgPreviewElement = document.getElementById('svgPreview');
+
+  const fontUrls = {
+    "Satisfy": "https://tiny-cactus-4444d4.netlify.app/Satisfy.woff2",
+    "Righteous": "https://tiny-cactus-4444d4.netlify.app/Righteous.woff2",
+    "Grand Hotel": "https://tiny-cactus-4444d4.netlify.app/GrandHotel.woff2",
+    "Short Stack": "https://tiny-cactus-4444d4.netlify.app/ShortStack.woff2",
+    "Love Ya Like A Sister": "https://tiny-cactus-4444d4.netlify.app/LoveYaLikeASister.woff2",
+    "Ribeye Marrow": "https://tiny-cactus-4444d4.netlify.app/RibeyeMarrow.woff2"
+  };
+
+  let loadedFont = null;
+  let currentFontName = null;
+
+  async function loadFont(fontName) {
+    if (fontName === currentFontName && loadedFont) return;
+    const fontUrl = fontUrls[fontName];
+    if (!fontUrl) {
+      console.error("Font URL not found for:", fontName);
+      loadedFont = null;
+      currentFontName = null;
+      return;
+    }
+    try {
+      loadedFont = await opentype.load(fontUrl);
+      currentFontName = fontName;
+    } catch (e) {
+      console.error("Failed to load font:", e);
+      loadedFont = null;
+      currentFontName = null;
+    }
+  }
+
+  function generateSvgPath(text, font, fontSize = 80) {
+    if (!font || !text.trim()) return '';
+
+    let x = 0;
+    const y = fontSize;
+
+    const path = font.getPath(text, x, y, fontSize);
+
+    return path.toPathData(2);
+  }
+
+  function generateSvgContentWithPaths(text, fontName) {
+    if (!text.trim()) {
+      return 'Enter text and select a font to see a preview.';
+    }
+    if (!loadedFont) {
+      return 'Loading font...';
     }
 
-    function updatePreview() {
-      const text = textInputElement.value;
-      const font = fontSelectorElement.value;
-      const svgContent = generateSvgContent(text, font);
-      svgPreviewElement.innerHTML = svgContent;
+    const fontSize = 80;
+    const svgWidth = 600;
+    const svgHeight = 150;
+
+    const pathData = generateSvgPath(text, loadedFont, fontSize);
+    const textWidth = loadedFont.getAdvanceWidth(text, fontSize);
+
+    const translateX = (svgWidth - textWidth) / 2;
+    const translateY = (svgHeight / 2) + (fontSize / 3);
+
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+        <g transform="translate(${translateX}, ${translateY})">
+          <path d="${pathData}" fill="#333" />
+        </g>
+      </svg>
+    `;
+  }
+
+  async function updatePreview() {
+    const text = textInputElement.value;
+    const fontName = fontSelectorElement.value;
+
+    if (fontName !== currentFontName || !loadedFont) {
+      await loadFont(fontName);
     }
 
-    function handleSubmit() {
-      const customerName = document.getElementById('customerInput').value.trim();
-      const itemDescription = document.getElementById('descInput').value.trim();
-      const engravingLocation = document.getElementById('locationInput').value.trim();
-      const text = textInputElement.value.trim();
-      const font = fontSelectorElement.value;
+    svgPreviewElement.innerHTML = generateSvgContentWithPaths(text, fontName);
+  }
 
-      if (!customerName || !itemDescription || !engravingLocation || !text) {
-        alert("Please fill out all required fields before submitting.");
-        return;
-      }
+  async function handleSubmit() {
+    const customerName = document.getElementById('customerInput').value.trim();
+    const itemDescription = document.getElementById('descInput').value.trim();
+    const engravingLocation = document.getElementById('locationInput').value.trim();
+    const text = textInputElement.value.trim();
+    const fontName = fontSelectorElement.value;
 
-      // Prepare filename safe string
-      function fileNameSafe(str) {
-        return str.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
-      }
-
-      const filename = `${fileNameSafe(customerName)}_${fileNameSafe(itemDescription)}_${fileNameSafe(engravingLocation)}.svg`;
-      const svgContent = generateSvgContent(text, font);
-      const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      document.getElementById('popupOverlay').style.display = 'flex';
+    if (!customerName || !itemDescription || !engravingLocation || !text) {
+      alert("Please fill out all required fields before submitting.");
+      return;
     }
 
-    textInputElement.addEventListener('input', updatePreview);
-    fontSelectorElement.addEventListener('change', updatePreview);
-
-    function closePopup() {
-      document.getElementById('popupOverlay').style.display = 'none';
+    if (fontName !== currentFontName || !loadedFont) {
+      await loadFont(fontName);
     }
-  </script>
 
-  <div id="popupOverlay" style="
-    display:none;
-    position:fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.4);
-    z-index:1000;
-    justify-content:center;
-    align-items:center;
-  ">
-    <div style="
-      background:white;
-      padding:2rem;
-      border-radius:12px;
-      box-shadow:0 4px 24px rgba(0,0,0,0.2);
-      text-align:center;
-    ">
-      <p style="font-size:1.25rem; margin:0;">
-        Hey you did it! Your customization is now ready to be engraved.
-      </p>
-      <button onclick="closePopup()" style="
-        margin-top:1rem;
-        padding:0.5rem 1rem;
-        border:none;
-        background:#3b82f6;
-        color:white;
-        border-radius:6px;
-        font-weight:bold;
-        cursor:pointer;
-      ">OK</button>
-    </div>
-  </div>
+    const filenameSafe = (str) => str.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
+    const filename = `${filenameSafe(customerName)}_${filenameSafe(itemDescription)}_${filenameSafe(engravingLocation)}.svg`;
+
+    const svgContent = generateSvgContentWithPaths(text, fontName);
+    const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    document.getElementById('popupOverlay').style.display = 'flex';
+  }
+
+  textInputElement.addEventListener('input', updatePreview);
+  fontSelectorElement.addEventListener('change', updatePreview);
+
+  // Load initial font and preview
+  window.addEventListener('DOMContentLoaded', updatePreview);
+</script>
+
 </body>
 </html>
