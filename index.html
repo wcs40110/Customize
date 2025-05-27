@@ -273,3 +273,28 @@
 
   <div id="popupOverlay" style="
     display:none;
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    z-index: 9999;
+  ">
+    <div style="
+      background: var(--primary);
+      padding: 2rem 3rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 8px var(--shadow);
+      cursor: pointer;
+      max-width: 90vw;
+      text-align: center;
+    " onclick="closePopup()">
+      <p>Thanks for submitting!</p>
+      <p>Click anywhere to close.</p>
+    </div>
+  </div>
+</body>
+</html>
