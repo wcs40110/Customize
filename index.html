@@ -259,13 +259,10 @@
       throw new Error(errorMsg);
     }
 
-    // Construct absolute URL based on window.location.origin, assuming assets are at the root.
-    // This is correct for the deployed Netlify site.
-    // If a preview environment (like *.scf.usercontent.goog) doesn't serve assets
-    // from its own origin's root, it will result in a 404 in that preview,
-    // which is an environment-specific issue.
-    const absoluteUrl = `${window.location.origin}/${relativeUrl.replace(/^\.\//, '')}`;
-    console.log(`[loadFont] Fetching URL (constructed absolute): ${absoluteUrl}`);
+    // Resolve the relative URL against the document's base URI
+    // This is generally more robust for different hosting environments (GitHub Pages, Netlify, local)
+    const absoluteUrl = new URL(relativeUrl, document.baseURI).href;
+    console.log(`[loadFont] Fetching URL (resolved with baseURI): ${absoluteUrl}`);
 
     try {
       const res = await fetch(absoluteUrl); 
