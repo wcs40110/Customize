@@ -1,214 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shady Creek Design Co.</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f9f9f9;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    input, textarea, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1em;
-    }
-
-    button {
-      background-color: #333;
-      color: white;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #555;
-    }
-
-    #svgPreview {
-      margin-top: 20px;
-      border: 1px solid #ddd;
-      min-height: 150px;
-      background: #fff;
-      padding: 10px;
-    }
-
-    #popupOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      font-size: 1.2em;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
 </head>
 <body>
-<div class="container">
-  <h2>Shady Creek Design Co.</h2>
-  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
-    <label for="customerInput">Customer Name</label>
-    <input type="text" id="customerInput" required>
-
-    <label for="descInput">Item Description</label>
-    <input type="text" id="descInput" required>
-
-    <label for="locationInput">Engraving Location</label>
-    <input type="text" id="locationInput" required>
-
-    <label for="textInput">Text to Engrave</label>
-    <textarea id="textInput" rows="2" required></textarea>
-
-    <label for="fontSelector">Font</label>
-    <select id="fontSelector">
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
-    </select>
-
-    <button type="submit">Generate & Download SVG</button>
-  </form>
-
-  <div id="svgPreview">SVG preview will appear here...</div>
-</div>
-
-<div id="popupOverlay" onclick="this.style.display='none'">SVG Downloaded! Click to dismiss.</div>
-
 <script>
-const fontUrls = {
-  "Satisfy": "https://tiny-florentine-e8dbd9.netlify.app/satisfy-regular.ttf",
-  "Righteous": "https://tiny-florentine-e8dbd9.netlify.app/righteous-regular.ttf",
-  "Grand Hotel": "https://tiny-florentine-e8dbd9.netlify.app/grandhotel-regular.ttf",
-  "Short Stack": "https://tiny-florentine-e8dbd9.netlify.app/shortstack-regular.ttf",
-  "Love Ya Like A Sister": "https://tiny-florentine-e8dbd9.netlify.app/loveyalikeasister-regular.ttf",
-  "Ribeye Marrow": "https://tiny-florentine-e8dbd9.netlify.app/ribeyemarrow-regular.ttf"
-};
-
-let loadedFont = null;
-let currentFontName = null;
-
-async function loadFont(fontName) {
-  if (fontName === currentFontName && loadedFont) return;
-
-  const url = fontUrls[fontName];
-  if (!url) {
-    throw new Error(`Font URL not found for: ${fontName}`);
+  // IMMEDIATE CHECK FOR OPENTYPE.JS
+  if (typeof opentype === 'undefined') {
+    console.error("CRITICAL: opentype.js library did NOT load!");
+    alert("CRITICAL: opentype.js did NOT load! Font features will not work. Check the browser console (Network tab) for issues loading 'opentype.min.js' from cdn.jsdelivr.net.");
+    // Display error prominently on the page
+    document.addEventListener('DOMContentLoaded', () => {
+      const previewDiv = document.getElementById('svgPreview');
+      if (previewDiv) {
+        previewDiv.innerHTML = "<div style='color: red; font-weight: bold; padding: 10px;'>CRITICAL ERROR: opentype.js library failed to load. This is essential for font operations. Please check your browser's Network tab in the developer tools for errors related to 'opentype.min.js'. Ensure your internet connection is active and not blocking cdn.jsdelivr.net.</div>";
+      }
+      // Disable form
+      const form = document.getElementById('customForm');
+      if (form) {
+        form.querySelectorAll('input, textarea, select, button').forEach(el => el.disabled = true);
+      }
+    });
+  } else {
+    console.log("SUCCESS: opentype.js library seems to be loaded.");
   }
 
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    const fontBuffer = await res.arrayBuffer();
-    loadedFont = opentype.parse(fontBuffer);
-    currentFontName = fontName;
-  } catch (error) {
-    console.error(`Failed to load font '${fontName}':`, error);
-    throw error;
+  const fontUrls = {
+    "Satisfy": "https://tiny-florentine-e8dbd9.netlify.app/satisfy-regular.ttf",
+    "Righteous": "https://tiny-florentine-e8dbd9.netlify.app/righteous-regular.ttf",
+    "Grand Hotel": "https://tiny-florentine-e8dbd9.netlify.app/grandhotel-regular.ttf",
+    "Short Stack": "https://tiny-florentine-e8dbd9.netlify.app/shortstack-regular.ttf",
+    "Love Ya Like A Sister": "https://tiny-florentine-e8dbd9.netlify.app/loveyalikeasister-regular.ttf",
+    "Ribeye Marrow": "https://tiny-florentine-e8dbd9.netlify.app/ribeyemarrow-regular.ttf"
+  };
+
+  let loadedFont = null;
+  let currentFontName = null;
+
+  async function loadFont(fontName) {
+    console.log(`[loadFont] Attempting to load font: ${fontName}`);
+    if (typeof opentype === 'undefined') {
+      const errorMsg = "[loadFont] CRITICAL: opentype.js is not defined. Cannot proceed.";
+      console.error(errorMsg);
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">${errorMsg}</div>`;
+      throw new Error("opentype.js is not defined inside loadFont.");
+    }
+
+    if (fontName === currentFontName && loadedFont) {
+      console.log(`[loadFont] Using cached font: ${fontName}`);
+      return;
+    }
+
+    const url = fontUrls[fontName];
+    if (!url) {
+      const errorMsg = `[loadFont] Font URL not found for: ${fontName}`;
+      console.error(errorMsg);
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">${errorMsg}</div>`;
+      throw new Error(errorMsg);
+    }
+
+    console.log(`[loadFont] Fetching URL: ${url}`);
+    try {
+      const res = await fetch(url);
+      console.log(`[loadFont] Fetch response for ${fontName}: Status ${res.status}, OK: ${res.ok}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status} for ${url}`);
+      }
+      const fontBuffer = await res.arrayBuffer();
+      console.log(`[loadFont] Font buffer received for ${fontName}, length: ${fontBuffer.byteLength} bytes.`);
+      if (fontBuffer.byteLength < 100) { // Arbitrary small number, real fonts are larger
+          console.warn(`[loadFont] WARNING: Font buffer for ${fontName} is very small. Is the font file correct/complete?`);
+      }
+      loadedFont = opentype.parse(fontBuffer);
+      console.log(`[loadFont] Font parsed successfully: ${fontName}`);
+      currentFontName = fontName;
+    } catch (error) {
+      console.error(`[loadFont] Failed to load or parse font '${fontName}':`, error);
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Error loading font '${fontName}': ${error.message}. Check console for more details.</div>`;
+      throw error; // Re-throw to be caught by updatePreview or handleSubmit
+    }
   }
-}
 
-function createSvg(text, font) {
-  const fontSize = 80;
-  const width = 600;
-  const height = 150;
-  const path = font.getPath(text, 0, 0, fontSize);
-  const pathData = path.toPathData(2);
-
-  return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 -70 ${width} ${height}">
-      <path d="${pathData}" fill="black"/>
-    </svg>
-  `;
-}
-
-async function updatePreview() {
-  const text = document.getElementById('textInput').value.trim();
-  const fontName = document.getElementById('fontSelector').value;
-  const preview = document.getElementById('svgPreview');
-
-  if (!text) {
-    preview.innerHTML = "Enter text above to preview.";
-    return;
+  function createSvg(text, font) {
+    // ... (rest of your createSvg function is likely fine)
+    const fontSize = 80;
+    const width = 600;
+    const height = 150;
+    console.log(`[createSvg] Creating SVG for text "${text}" with font ${font.names.fontFamily.en}`);
+    const path = font.getPath(text, 0, 0, fontSize); // Assuming baseline at y=0
+    const pathData = path.toPathData(2);
+    const svgContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 -70 ${width} ${height}">
+        <path d="${pathData}" fill="black"/>
+      </svg>
+    `;
+    console.log("[createSvg] SVG markup generated.");
+    return svgContent;
   }
 
-  try {
-    await loadFont(fontName);
-    const svgMarkup = createSvg(text, loadedFont);
-    preview.innerHTML = svgMarkup;
-  } catch (err) {
-    preview.innerHTML = `<div style="color: red;">Error loading font: ${err.message}</div>`;
+  async function updatePreview() {
+    console.log("[updatePreview] Called.");
+    const text = document.getElementById('textInput').value.trim();
+    const fontName = document.getElementById('fontSelector').value;
+    const preview = document.getElementById('svgPreview');
+
+    if (!text) {
+      preview.innerHTML = "Enter text above to preview.";
+      console.log("[updatePreview] No text, preview set to instruction.");
+      return;
+    }
+
+    preview.innerHTML = `Loading font '${fontName}' and generating preview...`; // Feedback during load
+    console.log(`[updatePreview] Text: "${text}", Font: "${fontName}"`);
+    try {
+      await loadFont(fontName);
+      const svgMarkup = createSvg(text, loadedFont);
+      preview.innerHTML = svgMarkup;
+      console.log("[updatePreview] SVG preview updated.");
+    } catch (err) {
+      console.error("[updatePreview] Error during preview update:", err);
+      // loadFont already updates the preview on its own error, but this is a fallback
+      if (!preview.innerHTML.includes("Error loading font")) { // Avoid overwriting specific error from loadFont
+        preview.innerHTML = `<div style="color: red;">Failed to update preview: ${err.message}. Check console.</div>`;
+      }
+    }
   }
-}
 
-async function handleSubmit() {
-  const customer = document.getElementById('customerInput').value.trim();
-  const desc = document.getElementById('descInput').value.trim();
-  const location = document.getElementById('locationInput').value.trim();
-  const text = document.getElementById('textInput').value.trim();
-  const fontName = document.getElementById('fontSelector').value;
+  async function handleSubmit() {
+    // ... (your handleSubmit function, consider adding logs here too if needed)
+    console.log("[handleSubmit] Form submitted.");
+    // ...
+    const text = document.getElementById('textInput').value.trim(); // Ensure text is defined
+    const fontName = document.getElementById('fontSelector').value; // Ensure fontName is defined
 
-  if (!text) {
-    alert("Enter some text to generate SVG.");
-    return;
+    if (!text) {
+        alert("Enter some text to generate SVG.");
+        console.log("[handleSubmit] No text to generate SVG.");
+        return;
+    }
+
+    try {
+        await loadFont(fontName); // Make sure font is loaded
+        // ... rest of your handleSubmit
+        const customer = document.getElementById('customerInput').value.trim();
+        const desc = document.getElementById('descInput').value.trim();
+        const location = document.getElementById('locationInput').value.trim();
+        const svgMarkup = createSvg(text, loadedFont);
+
+        const safeFileName = [customer, desc, location]
+            .map(s => s.replace(/\s+/g, "_").replace(/[^\w.-]/g, ''))
+            .filter(s => s) // Remove empty parts
+            .join("_") + (customer || desc || location ? "_" : "") + "engraving.svg"; // Ensure a base name if all are empty
+
+        const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFileName || "custom_engraving.svg"; // Fallback filename
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log(`[handleSubmit] SVG downloaded as ${safeFileName}`);
+        document.getElementById('popupOverlay').style.display = 'flex';
+    } catch (err) {
+        alert("Failed to generate SVG: " + err.message);
+        console.error("[handleSubmit] SVG generation error:", err);
+    }
   }
 
-  try {
-    await loadFont(fontName);
-    const svgMarkup = createSvg(text, loadedFont);
+  // Event Listeners
+  document.getElementById('textInput').addEventListener('input', updatePreview);
+  document.getElementById('fontSelector').addEventListener('change', updatePreview);
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log("[DOMContentLoaded] Page loaded, initial updatePreview call.");
+    updatePreview(); // Initial call
+  });
 
-    const safeFileName = [customer, desc, location]
-      .map(s => s.replace(/\s+/g, "_").replace(/[^\w.-]/g, ''))
-      .join("_") + ".svg";
-
-    const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = safeFileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    document.getElementById('popupOverlay').style.display = 'flex';
-  } catch (err) {
-    alert("Failed to generate SVG: " + err.message);
-    console.error("SVG generation error:", err);
-  }
-}
-
-document.getElementById('textInput').addEventListener('input', updatePreview);
-document.getElementById('fontSelector').addEventListener('change', updatePreview);
-window.addEventListener('DOMContentLoaded', updatePreview);
 </script>
 </body>
 </html>
