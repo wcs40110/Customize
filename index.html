@@ -8,18 +8,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <style>
-    /* Your existing CSS styles */
     body {
       font-family: 'Inter', Arial, sans-serif;
-      margin: 0; padding: 20px;
+      margin: 0;
+      padding: 20px;
       background-color: #f4f7f6;
-      display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
       color: #333;
     }
     .container {
-      max-width: 650px; width: 100%; margin: 30px 20px;
-      background: #fff; padding: 30px 40px;
-      border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      max-width: 650px;
+      width: 100%;
+      margin: 30px 20px;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
     h2 {
       font-family: 'Playfair Display', serif;
@@ -97,12 +104,19 @@
     button[type="submit"]:active {
       transform: translateY(0px);
     }
+    #previewCanvas {
+      border: 1px solid #ccc;
+      margin-top: 30px;
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 
-  <!-- Firebase compatibility SDKs -->
+  <!-- Firebase compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -127,16 +141,18 @@
     <label for="fontSelector">Font</label>
     <select id="fontSelector" required>
       <option value="" disabled selected>Select a Font</option>
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
+      <option value="Arial">Arial</option>
+      <option value="Courier New">Courier New</option>
+      <option value="Georgia">Georgia</option>
+      <option value="Times New Roman">Times New Roman</option>
+      <option value="Verdana">Verdana</option>
     </select>
 
     <button type="submit">Submit</button>
   </form>
+
+  <h3>Preview</h3>
+  <canvas id="previewCanvas" width="600" height="150"></canvas>
 </div>
 
 <script>
@@ -154,12 +170,16 @@
   // Initialize Firebase and Firestore
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  const storage = firebase.storage();
 
-  // Character count
   const MAX_CHAR_LIMIT = 13;
   const textInput = document.getElementById('textInput');
   const charCount = document.getElementById('charCount');
+  const previewCanvas = document.getElementById('previewCanvas');
+  const previewCtx = previewCanvas.getContext('2d');
+  const fontSelector = document.getElementById('fontSelector');
 
+  // Update char count display
   textInput.addEventListener('input', () => {
     const remaining = MAX_CHAR_LIMIT - textInput.value.length;
     charCount.textContent = `${remaining} characters remaining`;
@@ -170,34 +190,72 @@
     } else {
       charCount.style.color = '#7f8c8d';
     }
+    updatePreview();
   });
 
-  // Form submit handler
+  fontSelector.addEventListener('change', updatePreview);
+
+  // Update preview canvas with text & font
+  function updatePreview() {
+    const text = textInput.value.trim();
+    const font = fontSelector.value || 'Arial';
+
+    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    previewCtx.fillStyle = 'white';
+    previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+    previewCtx.fillStyle = 'black';
+    previewCtx.font = `80px "${font}", Arial, sans-serif`;
+    previewCtx.textAlign = 'center';
+    previewCtx.textBaseline = 'middle';
+    previewCtx.fillText(text, previewCanvas.width / 2, previewCanvas.height / 2);
+  }
+
+  // Call once initially
+  updatePreview();
+
+  // Form submit handler: Upload PNG to Firebase Storage & save Firestore order record
   async function handleSubmit() {
     const customer = document.getElementById('customerInput').value.trim();
     const desc = document.getElementById('descInput').value.trim();
     const location = document.getElementById('locationInput').value.trim();
-    const text = document.getElementById('textInput').value.trim();
-    const fontName = document.getElementById('fontSelector').value;
+    const text = textInput.value.trim();
+    const font = fontSelector.value;
 
-    if (!customer || !desc || !location || !text || !fontName) {
+    if (!customer || !desc || !location || !text || !font) {
       alert('Please fill out all required fields.');
       return;
     }
 
+    // Create sanitized filename
+    const safeFileName = `${customer}_${desc}_${location}.png`.replace(/\s+/g, '_');
+
     try {
+      // Convert canvas to blob & upload to Firebase Storage
+      const blob = await new Promise(resolve => previewCanvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Failed to create image blob.');
+
+      const storageRef = storage.ref().child(`engraving_images/${safeFileName}`);
+      const uploadTask = await storageRef.put(blob);
+      const downloadURL = await uploadTask.ref.getDownloadURL();
+
+      // Save order data to Firestore
       await db.collection('orders').add({
         customer,
         desc,
         location,
         text,
-        fontName,
+        font,
+        imageUrl: downloadURL,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
-      alert('Your engraving order has been submitted!');
+
+      alert('Your engraving order and image have been submitted!');
       document.getElementById('customForm').reset();
       charCount.textContent = `${MAX_CHAR_LIMIT} characters remaining`;
       charCount.style.color = '#7f8c8d';
+      updatePreview();
+
     } catch (error) {
       alert('Error submitting order: ' + error.message);
     }
