@@ -1,427 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shady Creek Design Co. - Custom Engraving</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f7f6; /* Softer background */
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      color: #333;
-    }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shady Creek Design Co. - Custom Engraving</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f7f6; /* Softer background */
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: #333;
+    }
 
-    .container {
-      max-width: 650px; /* Slightly wider */
-      width: 100%;
-      margin: 30px 20px;
-      background: #ffffff;
-      padding: 30px 40px; /* More padding */
-      border-radius: 16px; /* More rounded */
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
+    .container {
+      max-width: 650px; /* Slightly wider */
+      width: 100%;
+      margin: 30px 20px;
+      background: #ffffff;
+      padding: 30px 40px; /* More padding */
+      border-radius: 16px; /* More rounded */
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
 
-    h2 {
-      font-family: 'Playfair Display', serif; /* Decorative font for title */
-      text-align: center;
-      color: #2c3e50; /* Darker, elegant blue */
-      font-size: 2.5em; /* Larger title */
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #555;
-      font-size: 0.95em;
-      margin-top: 0;
-      margin-bottom: 30px;
-    }
+    h2 {
+      font-family: 'Playfair Display', serif; /* Decorative font for title */
+      text-align: center;
+      color: #2c3e50; /* Darker, elegant blue */
+      font-size: 2.5em; /* Larger title */
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #555;
+      font-size: 0.95em;
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
 
-    label {
-      display: block;
-      margin-top: 20px; /* Increased margin */
-      font-weight: 500; /* Medium weight */
-      color: #34495e; /* Slightly different label color */
-      font-size: 1.05em;
-    }
+    label {
+      display: block;
+      margin-top: 20px; /* Increased margin */
+      font-weight: 500; /* Medium weight */
+      color: #34495e; /* Slightly different label color */
+      font-size: 1.05em;
+    }
 
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 14px; /* Increased padding */
-      margin-top: 8px; /* Increased margin */
-      border: 1px solid #dcdfe6; /* Lighter border */
-      border-radius: 8px; /* More rounded */
-      font-size: 1em;
-      font-family: 'Inter', sans-serif;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      background-color: #fdfdfd;
-    }
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 14px; /* Increased padding */
+      margin-top: 8px; /* Increased margin */
+      border: 1px solid #dcdfe6; /* Lighter border */
+      border-radius: 8px; /* More rounded */
+      font-size: 1em;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fdfdfd;
+    }
 
-    input[type="text"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #3498db; /* Accent color on focus */
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-      outline: none;
-    }
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #3498db; /* Accent color on focus */
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      outline: none;
+    }
 
-    textarea {
-      resize: vertical;
-      min-height: 80px; /* Minimum height for textarea */
-    }
+    textarea {
+      resize: vertical;
+      min-height: 80px; /* Minimum height for textarea */
+    }
 
-    button[type="submit"] {
-      width: 100%;
-      padding: 15px; /* Increased padding */
-      margin-top: 30px; /* Increased margin */
-      background-image: linear-gradient(to right, #3498db 0%, #2980b9 51%, #3498db 100%);
-      background-size: 200% auto;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.15em;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: background-position 0.4s ease, transform 0.1s ease;
-      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
-    }
+    /* NEW: Style for character count */
+    #charCount {
+      font-size: 0.85em;
+      color: #7f8c8d;
+      text-align: right;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
 
-    button[type="submit"]:hover {
-      background-position: right center; /* change the direction of the change here */
-      transform: translateY(-1px);
-    }
-     button[type="submit"]:active {
-      transform: translateY(0px);
-    }
+    button[type="submit"] {
+      width: 100%;
+      padding: 15px; /* Increased padding */
+      margin-top: 30px; /* Increased margin */
+      background-image: linear-gradient(to right, #3498db 0%, #2980b9 51%, #3498db 100%);
+      background-size: 200% auto;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.15em;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background-position 0.4s ease, transform 0.1s ease;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    }
 
-
-    #svgPreview {
-      margin-top: 30px; /* Increased margin */
-      border: 2px dashed #e0e0e0; /* Slightly thicker, lighter dashed border */
-      min-height: 180px; /* Increased min-height */
-      background: #f9fafb; /* Very light grey background */
-      padding: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 8px;
-      overflow: auto;
-      transition: background-color 0.3s ease;
-    }
-    #svgPreview:has(svg) { /* Style when SVG is present */
-        background-color: #eff7ff;
-        border-color: #a3c9f0;
-    }
+    button[type="submit"]:hover {
+      background-position: right center; /* change the direction of the change here */
+      transform: translateY(-1px);
+    }
+     button[type="submit"]:active {
+      transform: translateY(0px);
+    }
 
 
-    #svgPreview svg {
-        max-width: 100%;
-        height: auto;
-    }
-
-    #popupOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.75);
-      color: white;
-      font-size: 1.3em; /* Slightly larger popup text */
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      text-align: center;
-      padding: 20px;
-      cursor: pointer;
-      backdrop-filter: blur(5px); /* Frosted glass effect */
-    }
-    #popupOverlay > div { /* Inner div for popup content styling */
-        background: rgba(44, 62, 80, 0.9); /* Darker, translucent background for content */
-        padding: 30px 40px;
-        border-radius: 12px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
+    #svgPreview {
+      margin-top: 30px; /* Increased margin */
+      border: 2px dashed #e0e0e0; /* Slightly thicker, lighter dashed border */
+      min-height: 180px; /* Increased min-height */
+      background: #f9fafb; /* Very light grey background */
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      overflow: auto;
+      transition: background-color 0.3s ease;
+    }
+    #svgPreview:has(svg) { /* Style when SVG is present */
+        background-color: #eff7ff;
+        border-color: #a3c9f0;
+    }
 
 
-    .critical-error-display {
-      color: #c0392b; /* Stronger red */
-      font-weight: 500;
-      padding: 15px;
-      border: 1px solid #e74c3c;
-      background-color: #fbeae5; /* Lighter red background */
-      border-radius: 8px;
-      text-align: center;
-      margin-top: 20px;
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+    #svgPreview svg {
+        max-width: 100%;
+        height: auto;
+    }
+
+    #popupOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      font-size: 1.3em; /* Slightly larger popup text */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(5px); /* Frosted glass effect */
+    }
+    #popupOverlay > div { /* Inner div for popup content styling */
+        background: rgba(44, 62, 80, 0.9); /* Darker, translucent background for content */
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+
+    .critical-error-display {
+      color: #c0392b; /* Stronger red */
+      font-weight: 500;
+      padding: 15px;
+      border: 1px solid #e74c3c;
+      background-color: #fbeae5; /* Lighter red background */
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
 </head>
 <body>
 
 <div class="container">
-  <h2>Shady Creek Design Co.</h2>
-  <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
+  <h2>Shady Creek Design Co.</h2>
+  <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
 
-  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
-    <label for="customerInput">Customer Name</label>
-    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required>
+  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
+    <label for="customerInput">Customer Name</label>
+    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required>
 
-    <label for="descInput">Item Description</label>
-    <input type="text" id="descInput" placeholder="ie. black cat" required>
+    <label for="descInput">Item Description</label>
+    <input type="text" id="descInput" placeholder="ie. black cat" required>
 
-    <label for="locationInput">Engraving Location</label>
-    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required>
+    <label for="locationInput">Engraving Location</label>
+    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required>
 
-    <label for="textInput">Text to Engrave</label>
-    <textarea id="textInput" rows="3" placeholder="Enter text for engraving..." required></textarea>
+    <label for="textInput">Text to Engrave</label>
+        <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
+    <div id="charCount">13 characters remaining</div>
 
-    <label for="fontSelector">Font</label>
-    <select id="fontSelector">
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
-    </select>
+    <label for="fontSelector">Font</label>
+    <select id="fontSelector">
+      <option value="Satisfy">Satisfy</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Grand Hotel">Grand Hotel</option>
+      <option value="Short Stack">Short Stack</option>
+      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow">Ribeye Marrow</option>
+    </select>
 
-    </form>
+  </form>
 
-  <div id="svgPreview">Enter text above to preview.</div>
-  <button type="submit" form="customForm">Submit</button> </div>
+  <div id="svgPreview">Enter text above to preview.</div>
+  <button type="submit" form="customForm">Submit</button> 
+</div>
 
 <div id="popupOverlay" onclick="this.style.display='none'">
-  <div>Hey, you did it! Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>
-  </div>
+  <div>Hey, you did it! Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>
+  </div>
 </div>
 
 <script>
-  // IMMEDIATE CHECK FOR OPENTYPE.JS
-  if (typeof opentype === 'undefined') {
-    console.error("CRITICAL: opentype.js library did NOT load!");
-    document.addEventListener('DOMContentLoaded', () => {
-      const previewDiv = document.getElementById('svgPreview');
-      if (previewDiv) {
-        previewDiv.innerHTML = "<div class='critical-error-display'>CRITICAL ERROR: opentype.js library failed to load. This is essential for font operations. Please check your browser's Network tab in the developer tools for errors related to 'opentype.min.js'. Ensure your internet connection is active and not blocking cdn.jsdelivr.net.</div>";
-      }
-      const form = document.getElementById('customForm');
-      if (form) {
-        form.querySelectorAll('input, textarea, select, button').forEach(el => el.disabled = true);
-        const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) submitButton.textContent = "Feature Disabled (Font Library Error)";
-      }
-    });
-  } else {
-    console.log("SUCCESS: opentype.js library seems to be loaded.");
-  }
+  // UPDATED: Changed MAX_CHAR_LIMIT to 13
+  const MAX_CHAR_LIMIT = 13; 
+  const charCountElement = document.getElementById('charCount');
+  const textInput = document.getElementById('textInput');
 
-  const fontUrls = {
-    "Satisfy": "./Satisfy-Regular.ttf",
-    "Righteous": "./Righteous-Regular.ttf",
-    "Grand Hotel": "./GrandHotel-Regular.ttf",
-    "Short Stack": "./ShortStack-Regular.ttf",
-    "Love Ya Like A Sister": "./LoveYaLikeASister-Regular.ttf",
-    "Ribeye Marrow": "./RibeyeMarrow-Regular.ttf"
-  };
+  // --- Character Limit Function ---
+  function updateCharCount() {
+    const currentLength = textInput.value.length;
+    const remaining = MAX_CHAR_LIMIT - currentLength;
+    charCountElement.textContent = `${remaining} characters remaining`;
 
-  let loadedFont = null;
-  let currentFontName = null;
+    // Highlight the count when approaching the limit
+    if (remaining <= 3) {
+      charCountElement.style.color = 'red';
+    } else if (remaining <= 6) {
+      charCountElement.style.color = '#e67e22'; // Orange
+    } else {
+      charCountElement.style.color = '#7f8c8d';
+    }
+  }
 
-  async function loadFont(fontName) {
-    console.log(`[loadFont] Attempting to load font: ${fontName}`);
-    if (typeof opentype === 'undefined') {
-      const errorMsg = "[loadFont] CRITICAL: opentype.js is not defined. Cannot proceed.";
-      console.error(errorMsg);
-      throw new Error("opentype.js is not defined inside loadFont.");
-    }
+  // --- Existing Code Below ---
 
-    if (fontName === currentFontName && loadedFont) {
-      console.log(`[loadFont] Using cached font: ${fontName}`);
-      return;
-    }
+  // IMMEDIATE CHECK FOR OPENTYPE.JS
+  if (typeof opentype === 'undefined') {
+    console.error("CRITICAL: opentype.js library did NOT load!");
+    document.addEventListener('DOMContentLoaded', () => {
+      const previewDiv = document.getElementById('svgPreview');
+      if (previewDiv) {
+        previewDiv.innerHTML = "<div class='critical-error-display'>CRITICAL ERROR: opentype.js library failed to load.</div>";
+      }
+      const form = document.getElementById('customForm');
+      if (form) {
+        form.querySelectorAll('input, textarea, select, button').forEach(el => el.disabled = true);
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.textContent = "Feature Disabled (Font Library Error)";
+      }
+    });
+  } else {
+    console.log("SUCCESS: opentype.js library seems to be loaded.");
+  }
 
-    const relativeUrl = fontUrls[fontName];
-    if (!relativeUrl) {
-      const errorMsg = `[loadFont] Font URL not found for: ${fontName}`;
-      console.error(errorMsg);
-      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Configuration error: Font key '${fontName}' not found.</div>`;
-      throw new Error(errorMsg);
-    }
+  const fontUrls = {
+    "Satisfy": "./Satisfy-Regular.ttf",
+    "Righteous": "./Righteous-Regular.ttf",
+    "Grand Hotel": "./GrandHotel-Regular.ttf",
+    "Short Stack": "./ShortStack-Regular.ttf",
+    "Love Ya Like A Sister": "./LoveYaLikeASister-Regular.ttf",
+    "Ribeye Marrow": "./RibeyeMarrow-Regular.ttf"
+  };
 
-    // Resolve the relative URL against the document's base URI
-    // This is generally more robust for different hosting environments (GitHub Pages, Netlify, local)
-    const absoluteUrl = new URL(relativeUrl, document.baseURI).href;
-    console.log(`[loadFont] Fetching URL (resolved with baseURI): ${absoluteUrl}`);
+  let loadedFont = null;
+  let currentFontName = null;
 
-    try {
-      const res = await fetch(absoluteUrl); 
-      console.log(`[loadFont] Fetch response for ${fontName}: Status ${res.status}, OK: ${res.ok}`);
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status} for ${absoluteUrl}. Ensure font file exists at this path and was deployed.`);
-      }
-      const fontBuffer = await res.arrayBuffer();
-      console.log(`[loadFont] Font buffer received for ${fontName}, length: ${fontBuffer.byteLength} bytes.`);
-      if (fontBuffer.byteLength < 1000) {
-          console.warn(`[loadFont] WARNING: Font buffer for ${fontName} is very small (${fontBuffer.byteLength} bytes). Is the font file correct/complete?`);
-      }
-      loadedFont = opentype.parse(fontBuffer);
-      console.log(`[loadFont] Font parsed successfully: ${fontName}`);
-      currentFontName = fontName;
-    } catch (error) {
-      console.error(`[loadFont] Failed to load or parse font '${fontName}' from '${absoluteUrl}':`, error);
-      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Error loading font '${fontName}': ${error.message}. Check console for details.</div>`;
-      throw error;
-    }
-  }
+  async function loadFont(fontName) {
+    console.log(`[loadFont] Attempting to load font: ${fontName}`);
+    if (typeof opentype === 'undefined') {
+      const errorMsg = "[loadFont] CRITICAL: opentype.js is not defined. Cannot proceed.";
+      console.error(errorMsg);
+      throw new Error("opentype.js is not defined inside loadFont.");
+    }
 
-  function createSvg(text, font) {
-    const fontSize = 80;
-    const width = 600;
-    const height = 150;
+    if (fontName === currentFontName && loadedFont) {
+      console.log(`[loadFont] Using cached font: ${fontName}`);
+      return;
+    }
 
-    let fontFamilyName = "Unknown";
-    if (font && font.names && font.names.fontFamily && font.names.fontFamily.en) {
-        fontFamilyName = font.names.fontFamily.en;
-    } else if (font && font.familyName) {
-        fontFamilyName = font.familyName;
-    }
-    console.log(`[createSvg] Creating SVG for text "${text}" with font ${fontFamilyName}`);
+    const relativeUrl = fontUrls[fontName];
+    if (!relativeUrl) {
+      const errorMsg = `[loadFont] Font URL not found for: ${fontName}`;
+      console.error(errorMsg);
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Configuration error: Font key '${fontName}' not found.</div>`;
+      throw new Error(errorMsg);
+    }
 
-    const path = font.getPath(text, 0, 0, fontSize);
-    const boundingBox = path.getBoundingBox();
-    const textWidth = boundingBox.x2 - boundingBox.x1;
+    const absoluteUrl = new URL(relativeUrl, document.baseURI).href;
+    console.log(`[loadFont] Fetching URL: ${absoluteUrl}`);
 
-    const x = (width - textWidth) / 2 - boundingBox.x1;
-    const y = fontSize * 0.8;
+    try {
+      const res = await fetch(absoluteUrl); 
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status} for ${absoluteUrl}.`);
+      }
+      const fontBuffer = await res.arrayBuffer();
+      loadedFont = opentype.parse(fontBuffer);
+      console.log(`[loadFont] Font parsed successfully: ${fontName}`);
+      currentFontName = fontName;
+    } catch (error) {
+      console.error(`[loadFont] Failed to load or parse font '${fontName}':`, error);
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Error loading font '${fontName}': ${error.message}. Check console for details.</div>`;
+      throw error;
+    }
+  }
 
-    const pathData = font.getPath(text, x, y, fontSize).toPathData(2);
+  function createSvg(text, font) {
+    const fontSize = 80;
+    const width = 600;
+    const height = 150;
 
-    const svgContent = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-        <path d="${pathData}" fill="black"/>
-      </svg>
-    `;
-    console.log("[createSvg] SVG markup generated.");
-    return svgContent;
-  }
+    let fontFamilyName = font.names.fontFamily.en || font.familyName || "Unknown";
+    console.log(`[createSvg] Creating SVG for text "${text}" with font ${fontFamilyName}`);
 
-  async function updatePreview() {
-    console.log("[updatePreview] Called.");
-    if (typeof opentype === 'undefined') {
-        console.log("[updatePreview] opentype.js not loaded, skipping preview update.");
+    const path = font.getPath(text, 0, 0, fontSize);
+    const boundingBox = path.getBoundingBox();
+    const textWidth = boundingBox.x2 - boundingBox.x1;
+
+    const x = (width - textWidth) / 2 - boundingBox.x1;
+    const y = fontSize * 0.8;
+
+    const pathData = font.getPath(text, x, y, fontSize).toPathData(2);
+
+    const svgContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <path d="${pathData}" fill="black"/>
+      </svg>
+    `;
+    console.log("[createSvg] SVG markup generated.");
+    return svgContent;
+  }
+
+  async function updatePreview() {
+    console.log("[updatePreview] Called.");
+    if (typeof opentype === 'undefined') {
+        return;
+    }
+    
+    updateCharCount();
+
+    const text = textInput.value.trim();
+    const fontName = document.getElementById('fontSelector').value;
+    const preview = document.getElementById('svgPreview');
+
+    if (!text) {
+      preview.innerHTML = "Enter text above to preview.";
+      return;
+    }
+    
+    preview.innerHTML = `Loading font '${fontName}' and generating preview...`;
+
+    try {
+      await loadFont(fontName);
+      if (!loadedFont) {
+          throw new Error("Font could not be loaded or parsed successfully.");
+      }
+      const svgMarkup = createSvg(text, loadedFont);
+      preview.innerHTML = svgMarkup;
+      console.log("[updatePreview] SVG preview updated.");
+    } catch (err) {
+      console.error("[updatePreview] Error during preview update:", err);
+      if (preview.innerHTML.includes("Loading font")) {
+        preview.innerHTML = `<div style="color: red;">Failed to update preview: ${err.message}. Check console.</div>`;
+      }
+    }
+  }
+  
+  async function handleSubmit() {
+    console.log("[handleSubmit] Form submitted. Starting client-side download.");
+    const popup = document.getElementById('popupOverlay');
+    const popupTextElement = popup.querySelector('div'); 
+
+     if (typeof opentype === 'undefined') {
+        if (popupTextElement) popupTextElement.innerHTML = 'Font processing library not loaded. Cannot generate SVG.<br><small>(Click to dismiss)</small>';
+        popup.style.display = 'flex';
+        console.log("[handleSubmit] opentype.js not loaded.");
+        return;
+    }
+
+    const customer = document.getElementById('customerInput').value.trim();
+    const desc = document.getElementById('descInput').value.trim();
+    const location = document.getElementById('locationInput').value.trim();
+    const text = document.getElementById('textInput').value.trim();
+    const fontName = document.getElementById('fontSelector').value;
+
+    // Client-side character limit validation 
+    if (text.length > MAX_CHAR_LIMIT) {
+        if (popupTextElement) popupTextElement.innerHTML = `Text exceeds the maximum limit of ${MAX_CHAR_LIMIT} characters.<br><small>(Click to dismiss)</small>`;
+        popup.style.display = 'flex';
         return;
     }
+    
+    if (!text) {
+        if (popupTextElement) popupTextElement.innerHTML = 'Enter some text to generate SVG.<br><small>(Click to dismiss)</small>';
+        popup.style.display = 'flex';
+        console.log("[handleSubmit] No text to generate SVG.");
+        return;
+    }
 
-    const text = document.getElementById('textInput').value.trim();
-    const fontName = document.getElementById('fontSelector').value;
-    const preview = document.getElementById('svgPreview');
+    try {
+        await loadFont(fontName);
+        if (!loadedFont) {
+            throw new Error("Font could not be loaded or parsed successfully for SVG generation.");
+        }
+        const svgMarkup = createSvg(text, loadedFont);
 
-    if (!text) {
-      preview.innerHTML = "Enter text above to preview.";
-      console.log("[updatePreview] No text, preview set to instruction.");
-      return;
-    }
+        // Generate safe file name
+        const safeFileNameBase = [customer, desc, location]
+            .map(s => s.replace(/\s+/g, "_").replace(/[^\w.-]/g, ''))
+            .filter(s => s)
+            .join("_");
 
-    preview.innerHTML = `Loading font '${fontName}' and generating preview...`;
-    console.log(`[updatePreview] Text: "${text}", Font: "${fontName}"`);
-    try {
-      await loadFont(fontName);
-      if (!loadedFont) {
-          console.error("[updatePreview] loadedFont is null after await loadFont(fontName).");
-          throw new Error("Font could not be loaded or parsed successfully.");
-      }
-      const svgMarkup = createSvg(text, loadedFont);
-      preview.innerHTML = svgMarkup;
-      console.log("[updatePreview] SVG preview updated.");
-    } catch (err) {
-      console.error("[updatePreview] Error during preview update:", err);
-      if (preview.innerHTML.includes("Loading font")) {
-        preview.innerHTML = `<div style="color: red;">Failed to update preview: ${err.message}. Check console.</div>`;
-      }
-    }
-  }
+        const safeFileName = safeFileNameBase ? `${safeFileNameBase}_engraving.svg` : "custom_engraving.svg";
 
-  async function handleSubmit() {
-    console.log("[handleSubmit] Form submitted.");
-    const popup = document.getElementById('popupOverlay');
-    const popupTextElement = popup.querySelector('div'); 
+        // Trigger browser download
+        const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = safeFileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log(`[handleSubmit] SVG downloaded as ${safeFileName}`);
+        
+        // Show success popup
+        if (popupTextElement) popupTextElement.innerHTML = `✅ Success! Your SVG has been downloaded as **${safeFileName}**.<br><small>(Click anywhere to dismiss)</small>`;
+        popup.style.display = 'flex';
+    } catch (err) {
+        // Show error popup
+        if (popupTextElement) popupTextElement.innerHTML = `❌ Failed to generate SVG: ${err.message}<br><small>(Click to dismiss)</small>`;
+        popup.style.display = 'flex';
+        console.error("[handleSubmit] SVG generation error:", err);
+    }
+  }
 
-     if (typeof opentype === 'undefined') {
-        if (popupTextElement) popupTextElement.innerHTML = 'Font processing library not loaded. Cannot generate SVG.<br><small>(Click to dismiss)</small>';
-        popup.style.display = 'flex';
-        console.log("[handleSubmit] opentype.js not loaded.");
-        return;
-    }
-
-    const customer = document.getElementById('customerInput').value.trim();
-    const desc = document.getElementById('descInput').value.trim();
-    const location = document.getElementById('locationInput').value.trim();
-    const text = document.getElementById('textInput').value.trim();
-    const fontName = document.getElementById('fontSelector').value;
-
-    if (!text) {
-        if (popupTextElement) popupTextElement.innerHTML = 'Enter some text to generate SVG.<br><small>(Click to dismiss)</small>';
-        popup.style.display = 'flex';
-        console.log("[handleSubmit] No text to generate SVG.");
-        return;
-    }
-
-    try {
-        await loadFont(fontName);
-        if (!loadedFont) {
-            console.error("[handleSubmit] loadedFont is null after await loadFont(fontName).");
-            throw new Error("Font could not be loaded or parsed successfully for SVG generation.");
-        }
-        const svgMarkup = createSvg(text, loadedFont);
-
-        const safeFileNameBase = [customer, desc, location]
-            .map(s => s.replace(/\s+/g, "_").replace(/[^\w.-]/g, ''))
-            .filter(s => s)
-            .join("_");
-
-        const safeFileName = safeFileNameBase ? `${safeFileNameBase}_engraving.svg` : "custom_engraving.svg";
-
-        const blob = new Blob([svgMarkup], { type: "image/svg+xml" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = safeFileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        console.log(`[handleSubmit] SVG downloaded as ${safeFileName}`);
-        if (popupTextElement) popupTextElement.innerHTML = `Hey, you did it! Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>`;
-        popup.style.display = 'flex';
-    } catch (err) {
-        if (popupTextElement) popupTextElement.innerHTML = `<div>Failed to generate SVG: ${err.message}<br><small>(Click to dismiss)</small></div>`;
-        popup.style.display = 'flex';
-        console.error("[handleSubmit] SVG generation error:", err);
-    }
-  }
-
-  // Event Listeners
-  document.getElementById('textInput').addEventListener('input', updatePreview);
-  document.getElementById('fontSelector').addEventListener('change', updatePreview);
-  window.addEventListener('DOMContentLoaded', () => {
-    console.log("[DOMContentLoaded] Page loaded, initial updatePreview call.");
-    if (typeof opentype !== 'undefined') {
-        updatePreview();
-    } else {
-        console.log("[DOMContentLoaded] opentype.js not loaded, initial preview update skipped.");
-    }
-  });
+  // Event Listeners
+  textInput.addEventListener('input', updatePreview);
+  textInput.addEventListener('input', updateCharCount); 
+  document.getElementById('fontSelector').addEventListener('change', updatePreview);
+  window.addEventListener('DOMContentLoaded', () => {
+    console.log("[DOMContentLoaded] Page loaded, initial updatePreview call.");
+    updateCharCount(); 
+    if (typeof opentype !== 'undefined') {
+        updatePreview();
+    } else {
+        console.log("[DOMContentLoaded] opentype.js not loaded, initial preview update skipped.");
+    }
+  });
 </script>
 
 </body>
