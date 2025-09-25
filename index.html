@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shady Creek Design Co. - Custom Engraving</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
@@ -113,3 +113,293 @@
     button[type="submit"]:active {
       transform: translateY(0px);
     }
+
+    #svgPreview {
+      margin-top: 30px;
+      border: 2px dashed #e0e0e0;
+      min-height: 180px;
+      background: #f9fafb;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      overflow: auto;
+      transition: background-color 0.3s ease;
+    }
+    #svgPreview:has(svg) {
+      background-color: #eff7ff;
+      border-color: #a3c9f0;
+    }
+
+    #svgPreview svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    #popupOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      font-size: 1.3em;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+    }
+    #popupOverlay > div {
+      background: rgba(44, 62, 80, 0.9);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .critical-error-display {
+      color: #c0392b;
+      font-weight: 500;
+      padding: 15px;
+      border: 1px solid #e74c3c;
+      background-color: #fbeae5;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Shady Creek Design Co.</h2>
+  <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
+
+  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
+    <label for="customerInput">Customer Name</label>
+    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required />
+
+    <label for="descInput">Item Description</label>
+    <input type="text" id="descInput" placeholder="ie. black cat" required />
+
+    <label for="locationInput">Engraving Location</label>
+    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required />
+
+    <label for="textInput">Text to Engrave</label>
+    <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
+    <div id="charCount">13 characters remaining</div>
+
+    <label for="fontSelector">Font</label>
+    <select id="fontSelector">
+      <option value="Satisfy">Satisfy</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Grand Hotel">Grand Hotel</option>
+      <option value="Short Stack">Short Stack</option>
+      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow">Ribeye Marrow</option>
+    </select>
+  </form>
+
+  <div id="svgPreview">Enter text above to preview.</div>
+  <button type="submit" form="customForm">Submit</button>
+</div>
+
+<div id="popupOverlay" onclick="this.style.display='none'">
+  <div>Your text is now ready for engraving.<br /><small>(Click anywhere to dismiss)</small></div>
+</div>
+
+<script>
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4PVCFhPsKKNzhS4xdh_wojR0AUWYWxbV2mJaS6Tf4rho8aBupEaqqoaJToacfpeYLow/exec';
+  
+  const MAX_CHAR_LIMIT = 13;
+  const charCountElement = document.getElementById('charCount');
+  const textInput = document.getElementById('textInput');
+  const submitButton = document.querySelector('button[type="submit"]');
+
+  function updateCharCount() {
+    const currentLength = textInput.value.length;
+    const remaining = MAX_CHAR_LIMIT - currentLength;
+    charCountElement.textContent = `${remaining} characters remaining`;
+    if (remaining <= 3) {
+      charCountElement.style.color = '#e74c3c';
+    } else if (remaining <= 6) {
+      charCountElement.style.color = '#e67e22';
+    } else {
+      charCountElement.style.color = '#7f8c8d';
+    }
+  }
+
+  if (typeof opentype === 'undefined') {
+    console.error("CRITICAL: opentype.js library did NOT load!");
+    document.addEventListener('DOMContentLoaded', () => {
+      const previewDiv = document.getElementById('svgPreview');
+      if (previewDiv) {
+        previewDiv.innerHTML = "<div class='critical-error-display'>CRITICAL ERROR: opentype.js library failed to load.</div>";
+      }
+      const form = document.getElementById('customForm');
+      if (form) {
+        form.querySelectorAll('input, textarea, select, button').forEach(el => (el.disabled = true));
+        if (submitButton) submitButton.textContent = 'Feature Disabled (Font Library Error)';
+      }
+    });
+  } else {
+    console.log('SUCCESS: opentype.js library seems to be loaded.');
+  }
+
+  const fontUrls = {
+    Satisfy: './Satisfy-Regular.ttf',
+    Righteous: './Righteous-Regular.ttf',
+    'Grand Hotel': './GrandHotel-Regular.ttf',
+    'Short Stack': './ShortStack-Regular.ttf',
+    'Love Ya Like A Sister': './LoveYaLikeASister-Regular.ttf',
+    'Ribeye Marrow': './RibeyeMarrow-Regular.ttf'
+  };
+
+  let loadedFont = null;
+  let currentFontName = null;
+
+  async function loadFont(fontName) {
+    if (typeof opentype === 'undefined') throw new Error('opentype.js is not defined.');
+    if (fontName === currentFontName && loadedFont) return;
+    const relativeUrl = fontUrls[fontName];
+    if (!relativeUrl) throw new Error(`Font URL not found for: ${fontName}`);
+    try {
+      const absoluteUrl = new URL(relativeUrl, document.baseURI).href;
+      const res = await fetch(absoluteUrl);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status} for ${absoluteUrl}.`);
+      const fontBuffer = await res.arrayBuffer();
+      loadedFont = opentype.parse(fontBuffer);
+      currentFontName = fontName;
+    } catch (error) {
+      console.error(`Failed to load or parse font '${fontName}':`, error);
+      document.getElementById('svgPreview').innerHTML = `<div style="color: red;">Error loading font '${fontName}'.</div>`;
+      throw error;
+    }
+  }
+
+  function createSvg(text, font) {
+    const fontSize = 80;
+    const width = 600;
+    const height = 150;
+    const path = font.getPath(text, 0, 0, fontSize);
+    const boundingBox = path.getBoundingBox();
+    const textWidth = boundingBox.x2 - boundingBox.x1;
+    const x = (width - textWidth) / 2 - boundingBox.x1;
+    const y = fontSize * 0.8;
+    const pathData = font.getPath(text, x, y, fontSize).toPathData(2);
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <path d="${pathData}" fill="black"/>
+      </svg>`;
+  }
+
+  async function updatePreview() {
+    if (typeof opentype === 'undefined') return;
+    updateCharCount();
+    const text = textInput.value.trim();
+    const fontName = document.getElementById('fontSelector').value;
+    const preview = document.getElementById('svgPreview');
+    if (!text) {
+      preview.innerHTML = 'Enter text above to preview.';
+      return;
+    }
+    preview.innerHTML = `Loading font '${fontName}'...`;
+    try {
+      await loadFont(fontName);
+      if (!loadedFont) throw new Error('Font could not be loaded.');
+      preview.innerHTML = createSvg(text, loadedFont);
+    } catch (err) {
+      console.error('[updatePreview] Error:', err);
+      preview.innerHTML = `<div style="color: red;">Failed to update preview.</div>`;
+    }
+  }
+
+  async function handleSubmit() {
+    const popup = document.getElementById('popupOverlay');
+    const popupTextElement = popup.querySelector('div');
+    const originalButtonText = submitButton.textContent;
+
+    const showPopup = (message) => {
+      if (popupTextElement) popupTextElement.innerHTML = `${message}<br /><small>(Click anywhere to dismiss)</small>`;
+      popup.style.display = 'flex';
+    };
+
+    if (GOOGLE_SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') {
+      showPopup('❌ Configuration Error: The Google App Script URL has not been set in the code.');
+      return;
+    }
+
+    const customer = document.getElementById('customerInput').value.trim();
+    const desc = document.getElementById('descInput').value.trim();
+    const location = document.getElementById('locationInput').value.trim();
+    const text = document.getElementById('textInput').value.trim();
+    const fontName = document.getElementById('fontSelector').value;
+
+    if (!customer || !desc || !location || !text) {
+      showPopup('Please fill out all required fields.');
+      return;
+    }
+
+    if (text.length > MAX_CHAR_LIMIT) {
+      showPopup(`Text exceeds the maximum limit of ${MAX_CHAR_LIMIT} characters.`);
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+
+    try {
+      await loadFont(fontName);
+      if (!loadedFont) throw new Error('Font could not be loaded for SVG generation.');
+
+      const svgMarkup = createSvg(text, loadedFont);
+
+      const safeFileNameBase = [customer, desc, location]
+        .map((s) => s.replace(/\s+/g, '_').replace(/[^\w.-]/g, ''))
+        .filter((s) => s)
+        .join('_');
+      const safeFileName = safeFileNameBase ? `${safeFileNameBase}_engraving.svg` : 'custom_engraving.svg';
+
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: safeFileName,
+          svgContent: svgMarkup,
+        }),
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        showPopup(`✅ Success! Your file **${safeFileName}** has been sent to Google Drive.`);
+      } else {
+        throw new Error(result.message || 'An unknown error occurred during upload.');
+      }
+    } catch (err) {
+      console.error('[handleSubmit] Error:', err);
+      showPopup(`❌ Failed to submit: ${err.message}`);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = originalButtonText;
+    }
+  }
+
+  textInput.addEventListener('input', updatePreview);
+  document.getElementById('fontSelector').addEventListener('change', updatePreview);
+  window.addEventListener('DOMContentLoaded', () => {
+    updateCharCount();
+    if (typeof opentype !== 'undefined') {
+      updatePreview();
+    }
+  });
+</script>
+
+</body>
+</html>
