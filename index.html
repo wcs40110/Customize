@@ -8,73 +8,108 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
-    /* Your existing CSS here unchanged for brevity */
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
-</head>
-<body>
-
-<div class="container">
-  <h2>Shady Creek Design Co.</h2>
-  <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
-
-  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
-    <label for="customerInput">Customer Name</label>
-    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required>
-
-    <label for="descInput">Item Description</label>
-    <input type="text" id="descInput" placeholder="ie. black cat" required>
-
-    <label for="locationInput">Engraving Location</label>
-    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required>
-
-    <label for="textInput">Text to Engrave</label>
-        <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
-    <div id="charCount">13 characters remaining</div>
-
-    <label for="fontSelector">Font</label>
-    <select id="fontSelector">
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
-    </select>
-  </form>
-
-  <div id="svgPreview">Enter text above to preview.</div>
-  <button type="submit" form="customForm">Submit</button>
-</div>
-
-<div id="popupOverlay" onclick="this.style.display='none'">
-  <div>Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>
-  </div>
-</div>
-
-<script>
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4PVCFhPsKKNzhS4xdh_wojR0AUWYWxbV2mJaS6Tf4rho8aBupEaqqoaJToacfpeYLow/exec';
-  
-  const MAX_CHAR_LIMIT = 13;
-  const charCountElement = document.getElementById('charCount');
-  const textInput = document.getElementById('textInput');
-  const submitButton = document.querySelector('button[type="submit"]');
-
-  function updateCharCount() {
-    const currentLength = textInput.value.length;
-    const remaining = MAX_CHAR_LIMIT - currentLength;
-    charCountElement.textContent = `${remaining} characters remaining`;
-    if (remaining <= 3) {
-      charCountElement.style.color = '#e74c3c';
-    } else if (remaining <= 6) {
-      charCountElement.style.color = '#e67e22';
-    } else {
-      charCountElement.style.color = '#7f8c8d';
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: #333;
     }
-  }
 
-  if (typeof opentype === 'undefined') {
-    console.error("CRITICAL: opentype.js library did NOT load!");
-    document.addEventListener('DOMContentLoaded', () => {
-      const previewDiv = document.getElementById('svgPreview');
-      if (preview
+    .container {
+      max-width: 650px;
+      width: 100%;
+      margin: 30px 20px;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      text-align: center;
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #555;
+      font-size: 0.95em;
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 500;
+      color: #34495e;
+      font-size: 1.05em;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fdfdfd;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    #charCount {
+      font-size: 0.85em;
+      color: #7f8c8d;
+      text-align: right;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 15px;
+      margin-top: 30px;
+      background-image: linear-gradient(to right, #3498db 0%, #2980b9 51%, #3498db 100%);
+      background-size: 200% auto;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.15em;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background-position 0.4s ease, transform 0.1s ease;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    }
+
+    button[type="submit"]:hover {
+      background-position: right center;
+      transform: translateY(-1px);
+    }
+    button[type="submit"]:active {
+      transform: translateY(0px);
+    }
