@@ -1,156 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shady Creek Design Co. - Engraving Order Form</title>
-  
-  <!-- Load Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Playfair+Display:wght@700&family=Righteous&family=Ribeye+Marrow&family=Short+Stack&family=Satisfy&display=swap" rel="stylesheet" />
-  
-  <style>
-    body {
-      font-family: 'Inter', Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f7f6;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      color: #333;
-    }
-    .container {
-      max-width: 650px;
-      width: 100%;
-      margin: 30px 20px;
-      background: #fff;
-      padding: 30px 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
-    h2 {
-      font-family: 'Playfair Display', serif;
-      text-align: center;
-      color: #2c3e50;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #555;
-      font-size: 0.95em;
-      margin-top: 0;
-      margin-bottom: 30px;
-    }
-    label {
-      display: block;
-      margin-top: 20px;
-      font-weight: 500;
-      color: #34495e;
-      font-size: 1.05em;
-    }
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 14px;
-      margin-top: 8px;
-      border: 1px solid #dcdfe6;
-      border-radius: 8px;
-      font-size: 1em;
-      font-family: 'Inter', sans-serif;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      background-color: #fdfdfd;
-    }
-    input[type="text"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
-      outline: none;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-    #charCount {
-      font-size: 0.85em;
-      color: #7f8c8d;
-      text-align: right;
-      margin-top: 4px;
-      margin-bottom: 20px;
-    }
-    button[type="submit"] {
-      width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      background-image: linear-gradient(to right, #3498db 0%, #2980b9 51%, #3498db 100%);
-      background-size: 200% auto;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.15em;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: background-position 0.4s ease, transform 0.1s ease;
-      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
-    }
-    button[type="submit"]:hover {
-      background-position: right center;
-      transform: translateY(-1px);
-    }
-    button[type="submit"]:active {
-      transform: translateY(0px);
-    }
-    #previewCanvas {
-      border: 1px solid #ccc;
-      margin-top: 20px;
-      margin-bottom: 15px;
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Engraving Orders Viewer</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fafafa;
+  }
+  h1 {
+    text-align: center;
+  }
+  .order-list {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .order-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .order-item img {
+    max-height: 150px;
+    display: block;
+    margin-top: 10px;
+  }
+  .order-meta {
+    font-size: 0.9rem;
+    color: #555;
+  }
+</style>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
 </head>
 <body>
-<div class="container">
-  <h2>Shady Creek Design Co.</h2>
-  <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
-  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
-    <label for="customerInput">Customer Name</label>
-    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required />
-    <label for="descInput">Item Description</label>
-    <input type="text" id="descInput" placeholder="ie. black cat" required />
-    <label for="locationInput">Engraving Location</label>
-    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required />
-    <label for="textInput">Text to Engrave</label>
-    <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
-    <div id="charCount">13 characters remaining</div>
-    <label for="fontSelector">Font</label>
-    <select id="fontSelector" required>
-      <option value="" disabled selected>Select a Font</option>
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
-    </select>
-    
-    <canvas id="previewCanvas" width="600" height="150"></canvas>
-    <button type="submit">Submit</button>
-  </form>
-</div>
+
+<h1>Engraving Orders</h1>
+<div class="order-list" id="orderList">Loading orders...</div>
 
 <script>
+  // Your Firebase config from your project
   const firebaseConfig = {
     apiKey: "AIzaSyDjTeHZV2LUTqQxi72kKT4oAgMu086UZFA",
     authDomain: "engraving-dea25.firebaseapp.com",
@@ -158,95 +54,45 @@
     storageBucket: "engraving-dea25.firebasestorage.app",
     messagingSenderId: "973609433685",
     appId: "1:973609433685:web:94e3ca86b0c163166332dc",
-    measurementId: "G-ENMVNZJMM5"
   };
-  
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  const storage = firebase.storage();
 
-  const MAX_CHAR_LIMIT = 13;
-  const textInput = document.getElementById('textInput');
-  const charCount = document.getElementById('charCount');
-  const previewCanvas = document.getElementById('previewCanvas');
-  const previewCtx = previewCanvas.getContext('2d');
-  const fontSelector = document.getElementById('fontSelector');
+  const orderList = document.getElementById('orderList');
 
-  function updatePreview() {
-    const text = textInput.value.trim();
-    const font = fontSelector.value || 'Arial';
+  // Fetch orders and display
+  db.collection('orders')
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        orderList.textContent = 'No orders yet.';
+        return;
+      }
+      orderList.innerHTML = '';
+      snapshot.forEach(doc => {
+        const order = doc.data();
+        const div = document.createElement('div');
+        div.className = 'order-item';
 
-    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-    previewCtx.fillStyle = 'white';
-    previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+        div.innerHTML = `
+          <strong>Customer:</strong> ${order.customer} <br/>
+          <strong>Description:</strong> ${order.desc} <br/>
+          <strong>Location:</strong> ${order.location} <br/>
+          <strong>Text:</strong> ${order.text} <br/>
+          <strong>Font:</strong> ${order.font} <br/>
+          <img src="${order.imageUrl}" alt="Engraving preview"/>
+        `;
 
-    previewCtx.fillStyle = 'black';
-    previewCtx.font = `80px '${font}', Arial, sans-serif`;
-    previewCtx.textAlign = 'center';
-    previewCtx.textBaseline = 'middle';
-    previewCtx.fillText(text, previewCanvas.width / 2, previewCanvas.height / 2);
-  }
-
-  textInput.addEventListener('input', () => {
-    const remaining = MAX_CHAR_LIMIT - textInput.value.length;
-    charCount.textContent = `${remaining} characters remaining`;
-    if (remaining <= 3) {
-      charCount.style.color = '#e74c3c';
-    } else if (remaining <= 6) {
-      charCount.style.color = '#e67e22';
-    } else {
-      charCount.style.color = '#7f8c8d';
-    }
-    updatePreview();
-  });
-
-  fontSelector.addEventListener('change', updatePreview);
-
-  updatePreview();
-
-  async function handleSubmit() {
-    const customer = document.getElementById('customerInput').value.trim();
-    const desc = document.getElementById('descInput').value.trim();
-    const location = document.getElementById('locationInput').value.trim();
-    const text = textInput.value.trim();
-    const font = fontSelector.value;
-
-    if (!customer || !desc || !location || !text || !font) {
-      alert('Please fill out all required fields.');
-      return;
-    }
-
-    const safeFileName = `${customer}_${desc}_${location}.png`.replace(/\s+/g, '_');
-
-    try {
-      const blob = await new Promise(resolve => previewCanvas.toBlob(resolve, 'image/png'));
-      if (!blob) throw new Error('Failed to create image blob.');
-
-      const storageRef = storage.ref().child(`engraving_images/${safeFileName}`);
-      const uploadTask = await storageRef.put(blob);
-      const downloadURL = await uploadTask.ref.getDownloadURL();
-
-      await db.collection('orders').add({
-        customer,
-        desc,
-        location,
-        text,
-        font,
-        imageUrl: downloadURL,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        orderList.appendChild(div);
       });
-
-      alert('Your engraving order and image have been submitted!');
-      document.getElementById('customForm').reset();
-      charCount.textContent = `${MAX_CHAR_LIMIT} characters remaining`;
-      charCount.style.color = '#7f8c8d';
-      updatePreview();
-
-    } catch (error) {
-      alert('Error submitting order: ' + error.message);
-      console.error(error);
-    }
-  }
+    })
+    .catch(err => {
+      orderList.textContent = 'Error loading orders: ' + err.message;
+      console.error('Error fetching orders:', err);
+    });
 </script>
 
 </body>
