@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shady Creek Design Co. - Engraving Order Form</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  
+  <!-- Google Fonts as used in previous versions -->
+  <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Playfair+Display:wght@700&family=Righteous&family=Ribeye+Marrow&family=Short+Stack&family=Satisfy&display=swap" rel="stylesheet" />
+  
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
@@ -84,7 +85,7 @@
     button[type="submit"] {
       width: 100%;
       padding: 15px;
-      margin-top: 30px;
+      margin-top: 15px;
       background-image: linear-gradient(to right, #3498db 0%, #2980b9 51%, #3498db 100%);
       background-size: 200% auto;
       color: white;
@@ -106,10 +107,11 @@
     }
     #previewCanvas {
       border: 1px solid #ccc;
-      margin-top: 30px;
-      display: block;
+      margin-top: 20px;
+      margin-bottom: 15px;
       max-width: 100%;
       height: auto;
+      display: block;
     }
   </style>
 
@@ -119,44 +121,36 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 </head>
 <body>
-
 <div class="container">
   <h2>Shady Creek Design Co.</h2>
   <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
-
   <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
     <label for="customerInput">Customer Name</label>
     <input type="text" id="customerInput" placeholder="ie. Jane Smith" required />
-
     <label for="descInput">Item Description</label>
     <input type="text" id="descInput" placeholder="ie. black cat" required />
-
     <label for="locationInput">Engraving Location</label>
     <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required />
-
     <label for="textInput">Text to Engrave</label>
     <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
     <div id="charCount">13 characters remaining</div>
-
     <label for="fontSelector">Font</label>
     <select id="fontSelector" required>
       <option value="" disabled selected>Select a Font</option>
-      <option value="Arial">Arial</option>
-      <option value="Courier New">Courier New</option>
-      <option value="Georgia">Georgia</option>
-      <option value="Times New Roman">Times New Roman</option>
-      <option value="Verdana">Verdana</option>
+      <option value="Satisfy">Satisfy</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Grand Hotel">Grand Hotel</option>
+      <option value="Short Stack">Short Stack</option>
+      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow">Ribeye Marrow</option>
     </select>
-
+    <canvas id="previewCanvas" width="600" height="150"></canvas>
     <button type="submit">Submit</button>
   </form>
-
-  <h3>Preview</h3>
-  <canvas id="previewCanvas" width="600" height="150"></canvas>
 </div>
 
 <script>
-  // Your Firebase config object from Firebase Console
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDjTeHZV2LUTqQxi72kKT4oAgMu086UZFA",
     authDomain: "engraving-dea25.firebaseapp.com",
@@ -166,8 +160,8 @@
     appId: "1:973609433685:web:94e3ca86b0c163166332dc",
     measurementId: "G-ENMVNZJMM5"
   };
-
-  // Initialize Firebase and Firestore
+  
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const storage = firebase.storage();
@@ -179,7 +173,7 @@
   const previewCtx = previewCanvas.getContext('2d');
   const fontSelector = document.getElementById('fontSelector');
 
-  // Update char count display
+  // Update character count and preview on text input
   textInput.addEventListener('input', () => {
     const remaining = MAX_CHAR_LIMIT - textInput.value.length;
     charCount.textContent = `${remaining} characters remaining`;
@@ -193,9 +187,10 @@
     updatePreview();
   });
 
+  // Update preview on font change
   fontSelector.addEventListener('change', updatePreview);
 
-  // Update preview canvas with text & font
+  // Render text with selected font to canvas preview
   function updatePreview() {
     const text = textInput.value.trim();
     const font = fontSelector.value || 'Arial';
@@ -205,16 +200,15 @@
     previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
 
     previewCtx.fillStyle = 'black';
-    previewCtx.font = `80px "${font}", Arial, sans-serif`;
+    previewCtx.font = `80px ${font}, Arial, sans-serif`;
     previewCtx.textAlign = 'center';
     previewCtx.textBaseline = 'middle';
     previewCtx.fillText(text, previewCanvas.width / 2, previewCanvas.height / 2);
   }
 
-  // Call once initially
   updatePreview();
 
-  // Form submit handler: Upload PNG to Firebase Storage & save Firestore order record
+  // Form submit handler
   async function handleSubmit() {
     const customer = document.getElementById('customerInput').value.trim();
     const desc = document.getElementById('descInput').value.trim();
@@ -227,11 +221,9 @@
       return;
     }
 
-    // Create sanitized filename
     const safeFileName = `${customer}_${desc}_${location}.png`.replace(/\s+/g, '_');
 
     try {
-      // Convert canvas to blob & upload to Firebase Storage
       const blob = await new Promise(resolve => previewCanvas.toBlob(resolve, 'image/png'));
       if (!blob) throw new Error('Failed to create image blob.');
 
@@ -239,7 +231,6 @@
       const uploadTask = await storageRef.put(blob);
       const downloadURL = await uploadTask.ref.getDownloadURL();
 
-      // Save order data to Firestore
       await db.collection('orders').add({
         customer,
         desc,
