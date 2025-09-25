@@ -1,42 +1,80 @@
-const FOLDER_ID = "1aIqTbBBKF3136pOlBHqE5Kjis5QbDcLE";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shady Creek Design Co. - Custom Engraving</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* Your existing CSS here unchanged for brevity */
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+</head>
+<body>
 
-function doOptions(e) {
-  // Handles the CORS preflight request.
-  return ContentService.createTextOutput('')
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeader('Access-Control-Allow-Origin', '*')
-    .setHeader('Access-Control-Allow-Methods', 'POST')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
+<div class="container">
+  <h2>Shady Creek Design Co.</h2>
+  <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
 
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const fileName = data.fileName;
-    const svgContent = data.svgContent;
+  <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
+    <label for="customerInput">Customer Name</label>
+    <input type="text" id="customerInput" placeholder="ie. Jane Smith" required>
 
-    if (!fileName || !svgContent) {
-      throw new Error("Missing fileName or svgContent in the request.");
+    <label for="descInput">Item Description</label>
+    <input type="text" id="descInput" placeholder="ie. black cat" required>
+
+    <label for="locationInput">Engraving Location</label>
+    <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required>
+
+    <label for="textInput">Text to Engrave</label>
+        <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
+    <div id="charCount">13 characters remaining</div>
+
+    <label for="fontSelector">Font</label>
+    <select id="fontSelector">
+      <option value="Satisfy">Satisfy</option>
+      <option value="Righteous">Righteous</option>
+      <option value="Grand Hotel">Grand Hotel</option>
+      <option value="Short Stack">Short Stack</option>
+      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow">Ribeye Marrow</option>
+    </select>
+  </form>
+
+  <div id="svgPreview">Enter text above to preview.</div>
+  <button type="submit" form="customForm">Submit</button>
+</div>
+
+<div id="popupOverlay" onclick="this.style.display='none'">
+  <div>Your text is now ready for engraving.<br><small>(Click anywhere to dismiss)</small>
+  </div>
+</div>
+
+<script>
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4PVCFhPsKKNzhS4xdh_wojR0AUWYWxbV2mJaS6Tf4rho8aBupEaqqoaJToacfpeYLow/exec';
+  
+  const MAX_CHAR_LIMIT = 13;
+  const charCountElement = document.getElementById('charCount');
+  const textInput = document.getElementById('textInput');
+  const submitButton = document.querySelector('button[type="submit"]');
+
+  function updateCharCount() {
+    const currentLength = textInput.value.length;
+    const remaining = MAX_CHAR_LIMIT - currentLength;
+    charCountElement.textContent = `${remaining} characters remaining`;
+    if (remaining <= 3) {
+      charCountElement.style.color = '#e74c3c';
+    } else if (remaining <= 6) {
+      charCountElement.style.color = '#e67e22';
+    } else {
+      charCountElement.style.color = '#7f8c8d';
     }
-
-    const folder = DriveApp.getFolderById(FOLDER_ID);
-    const blob = Utilities.newBlob(svgContent, 'image/svg+xml', fileName);
-    folder.createFile(blob);
-
-    const output = JSON.stringify({ status: 'success', message: `File '${fileName}' was uploaded to Google Drive.` });
-
-    return ContentService.createTextOutput(output)
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*');  // Allow requests from any origin
-
-  } catch (error) {
-    Logger.log(error.toString());
-
-    const output = JSON.stringify({ status: 'error', message: error.message });
-
-    return ContentService.createTextOutput(output)
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', '*');
   }
-}
 
+  if (typeof opentype === 'undefined') {
+    console.error("CRITICAL: opentype.js library did NOT load!");
+    document.addEventListener('DOMContentLoaded', () => {
+      const previewDiv = document.getElementById('svgPreview');
+      if (preview
