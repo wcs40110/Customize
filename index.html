@@ -148,6 +148,7 @@
     <canvas id="previewCanvas" width="600" height="150"></canvas>
     <button type="submit">Submit</button>
   </form>
+  <div style="font-size: 0.7em; color: #999; text-align: center; margin-top: 15px;">Version 1.1.0</div>
 </div>
 
 <script>
@@ -172,7 +173,9 @@
   const previewCtx = previewCanvas.getContext('2d');
   const fontSelector = document.getElementById('fontSelector');
 
-  function updatePreview() {
+  async function updatePreview() {
+    await document.fonts.ready;
+
     const text = textInput.value.trim();
     const font = fontSelector.value || 'Arial';
 
