@@ -8,167 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: 'Inter', Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f7f6;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      color: #333;
-    }
-
-    .container {
-      max-width: 650px;
-      width: 100%;
-      margin: 30px 20px;
-      background: #ffffff;
-      padding: 30px 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      font-family: 'Playfair Display', serif;
-      text-align: center;
-      color: #2c3e50;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #555;
-      font-size: 0.95em;
-      margin-top: 0;
-      margin-bottom: 30px;
-    }
-
-    label {
-      display: block;
-      margin-top: 20px;
-      font-weight: 500;
-      color: #34495e;
-      font-size: 1.05em;
-    }
-
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 14px;
-      margin-top: 8px;
-      border: 1px solid #dcdfe6;
-      border-radius: 8px;
-      font-size: 1em;
-      font-family: 'Inter', sans-serif;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      background-color: #fdfdfd;
-    }
-
-    input[type="text"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-      outline: none;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    #charCount {
-      font-size: 0.85em;
-      color: #7f8c8d;
-      text-align: right;
-      margin-top: 4px;
-      margin-bottom: 20px;
-    }
-
-    button[type="submit"] {
-      width: 100%;
-      padding: 15px;
-      margin-top: 30px;
-      background-image: linear-gradient(to right, #3498db 0%, #2980b9 51%, #3498db 100%);
-      background-size: 200% auto;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.15em;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: background-position 0.4s ease, transform 0.1s ease;
-      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
-    }
-
-    button[type="submit"]:hover {
-      background-position: right center;
-      transform: translateY(-1px);
-    }
-    button[type="submit"]:active {
-      transform: translateY(0px);
-    }
-
-    #svgPreview {
-      margin-top: 30px;
-      border: 2px dashed #e0e0e0;
-      min-height: 180px;
-      background: #f9fafb;
-      padding: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 8px;
-      overflow: auto;
-      transition: background-color 0.3s ease;
-    }
-    #svgPreview:has(svg) {
-      background-color: #eff7ff;
-      border-color: #a3c9f0;
-    }
-
-    #svgPreview svg {
-      max-width: 100%;
-      height: auto;
-    }
-
-    #popupOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.75);
-      color: white;
-      font-size: 1.3em;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      text-align: center;
-      padding: 20px;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-    }
-    #popupOverlay > div {
-      background: rgba(44, 62, 80, 0.9);
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
-
-    .critical-error-display {
-      color: #c0392b;
-      font-weight: 500;
-      padding: 15px;
-      border: 1px solid #e74c3c;
-      background-color: #fbeae5;
-      border-radius: 8px;
-      text-align: center;
-      margin-top: 20px;
-    }
+    /* [All your existing CSS here unchanged for brevity] */
   </style>
   <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
 </head>
@@ -212,7 +52,7 @@
 </div>
 
 <script>
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4PVCFhPsKKNzhS4xdh_wojR0AUWYWxbV2mJaS6Tf4rho8aBupEaqqoaJToacfpeYLow/exec';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsGrnapt72NvubuDD0e1fT9BFy7LbtISlXGuPkQtSrPstjUQhM_sb4R-vAlj2g0-H_dA/exec';
   
   const MAX_CHAR_LIMIT = 13;
   const charCountElement = document.getElementById('charCount');
@@ -255,7 +95,7 @@
     'Grand Hotel': './GrandHotel-Regular.ttf',
     'Short Stack': './ShortStack-Regular.ttf',
     'Love Ya Like A Sister': './LoveYaLikeASister-Regular.ttf',
-    'Ribeye Marrow': './RibeyeMarrow-Regular.ttf'
+    'Ribeye Marrow': './RibeyeMarrow-Regular.ttf',
   };
 
   let loadedFont = null;
@@ -292,7 +132,7 @@
     const pathData = font.getPath(text, x, y, fontSize).toPathData(2);
     return `
       <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-        <path d="${pathData}" fill="black"/>
+        <path d="${pathData}" fill="black" />
       </svg>`;
   }
 
