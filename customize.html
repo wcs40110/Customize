@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Engraving Orders Viewer</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fafafa;
+  }
+  h1 {
+    text-align: center;
+  }
+  .order-list {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .order-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  .order-item img {
+    max-height: 150px;
+    display: block;
+    margin-top: 10px;
+  }
+  .order-meta {
+    font-size: 0.9rem;
+    color: #555;
+  }
+</style>
 
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+
+<h1>Engraving Orders</h1>
+<div class="order-list" id="orderList">Loading orders...</div>
+
+<script>
+  // Your Firebase config from your project
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjTeHZV2LUTqQxi72kKT4oAgMu086UZFA",
+    authDomain: "engraving-dea25.firebaseapp.com",
+    projectId: "engraving-dea25",
+    storageBucket: "engraving-dea25.firebasestorage.app",
+    messagingSenderId: "973609433685",
+    appId: "1:973609433685:web:94e3ca86b0c163166332dc",
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const orderList = document.getElementById('orderList');
+
+  // Fetch orders and display
+  db.collection('orders')
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(snapshot => {
+      if (snapshot.empty) {
+        orderList.textContent = 'No orders yet.';
+        return;
+      }
+      orderList.innerHTML = '';
+      snapshot.forEach(doc => {
+        const order = doc.data();
+        const div = document.createElement('div');
+        div.className = 'order-item';
+
+        div.innerHTML = `
+          <strong>Customer:</strong> ${order.customer} <br/>
+          <strong>Description:</strong> ${order.desc} <br/>
+          <strong>Location:</strong> ${order.location} <br/>
+          <strong>Text:</strong> ${order.text} <br/>
+          <strong>Font:</strong> ${order.font} <br/>
+          <img src="${order.imageUrl}" alt="Engraving preview"/>
+        `;
+
+        orderList.appendChild(div);
+      });
+    })
+    .catch(err => {
+      orderList.textContent = 'Error loading orders: ' + err.message;
+      console.error('Error fetching orders:', err);
+    });
+</script>
+
+</body>
+</html>
