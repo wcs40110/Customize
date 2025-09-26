@@ -185,4 +185,100 @@
       submitButton.disabled = false;
     })
     .catch(error => {
-      alert
+      alert('Auth error: ' + error.message);
+      console.error(error);
+    });
+
+  async function updatePreview() {
+    console.log('updatePreview called');
+    const text = textInput.value.trim();
+    const font = fontSelector.value || 'Arial';
+    // Attempt to load the selected font before drawing
+    try {
+      await document.fonts.load(`80px '${font}'`);
+    } catch(e) {}
+    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    previewCtx.fillStyle = 'white';
+    previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+    previewCtx.fillStyle = 'black';
+    previewCtx.font = `80px '${font}', Arial, sans-serif`;
+    previewCtx.textAlign = 'center';
+    previewCtx.textBaseline = 'middle';
+    previewCtx.fillText(text, previewCanvas.width / 2, previewCanvas.height / 2);
+  }
+
+  textInput.addEventListener('input', () => {
+    console.log('textInput input event');
+    const remaining = MAX_CHAR_LIMIT - textInput.value.length;
+    charCount.textContent = `${remaining} characters remaining`;
+    if (remaining <= 3) {
+      charCount.style.color = '#e74c3c';
+    } else if (remaining <= 6) {
+      charCount.style.color = '#e67e22';
+    } else {
+      charCount.style.color = '#7f8c8d';
+    }
+    updatePreview();
+  });
+
+  fontSelector.addEventListener('change', () => {
+    console.log('fontSelector change event');
+    updatePreview();
+  });
+
+  // Initial preview render
+  updatePreview();
+
+  async function handleSubmit() {
+    if (!auth.currentUser) {
+      alert('You must be signed in to submit an order.');
+      return;
+    }
+
+    const customer = document.getElementById('customerInput').value.trim();
+    const desc = document.getElementById('descInput').value.trim();
+    const location = document.getElementById('locationInput').value.trim();
+    const text = textInput.value.trim();
+    const font = fontSelector.value;
+
+    if (!customer || !desc || !location || !text || !font) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    const safeFileName = `${customer}_${desc}_${location}.png`.replace(/\s+/g, '_');
+
+    try {
+      const blob = await new Promise(resolve => previewCanvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Failed to create image blob.');
+
+      const storageRef = storage.ref().child(`engraving_images/${safeFileName}`);
+      const uploadTask = await storageRef.put(blob);
+      const downloadURL = await uploadTask.ref.getDownloadURL();
+
+      await db.collection('orders').add({
+        customer,
+        desc,
+        location,
+        text,
+        font,
+        imageUrl: downloadURL,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('Your engraving order and image have been submitted!');
+      document.getElementById('customForm').reset();
+      charCount.textContent = `${MAX_CHAR_LIMIT} characters remaining`;
+      charCount.style.color = '#7f8c8d';
+      updatePreview();
+
+    } catch (error) {
+      alert('Error submitting order: ' + error.message);
+      console.error(error);
+    }
+  }
+</script>
+
+</body>
+</html>
