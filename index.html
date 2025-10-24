@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shady Creek Design Co. - Engraving Order Form</title>
-  
+
   <!-- Load Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Love+Ya+Like+A+Sister&family=Playfair+Display:wght@700&family=Righteous&family=Ribeye+Marrow&family=Short+Stack&family=Satisfy&display=swap" rel="stylesheet">
 
@@ -123,11 +123,27 @@
       font-size: 1em;
       padding-right: 36px;
     }
-    /* Small helper text */
-    .helper {
-      font-size: 0.85em;
-      color: #888;
+
+    /* small helper text under contact inputs */
+    .contact-note {
+      font-size: 0.9em;
+      color: #666;
       margin-top: 6px;
+    }
+
+    /* optional: show email + phone side by side on wider screens */
+    .contact-row {
+      display: flex;
+      gap: 12px;
+    }
+    .contact-row .contact-field {
+      flex: 1;
+    }
+
+    @media (max-width: 520px) {
+      .contact-row {
+        flex-direction: column;
+      }
     }
   </style>
 
@@ -141,6 +157,7 @@
 <div class="container">
   <h2>Shady Creek Design Co.</h2>
   <p class="subtitle">If ordering more than one item please fill out separate forms.</p>
+
   <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
     <label for="customerInput">Customer Name</label>
     <input type="text" id="customerInput" placeholder="ie. Jane Smith" required />
@@ -151,12 +168,17 @@
     <label for="locationInput">Engraving Location</label>
     <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required />
 
-    <!-- New: contact fields for notifications -->
-    <label for="emailInput">Email</label>
-    <input type="email" id="emailInput" placeholder="Email (for notification only)" />
-    <label for="phoneInput">Phone</label>
-    <input type="tel" id="phoneInput" placeholder="Phone (for notification only)" />
-    <div class="helper">We will only use these to notify you about your order.</div>
+    <!-- Combined contact label: email OR phone, with explanatory text and (optional) -->
+    <label for="emailInput">Email or Phone — For notification when order is ready (optional)</label>
+    <div class="contact-row">
+      <div class="contact-field">
+        <input type="email" id="emailInput" placeholder="Email (for notification only)" />
+      </div>
+      <div class="contact-field">
+        <input type="tel" id="phoneInput" placeholder="Phone (for notification only)" />
+      </div>
+    </div>
+    <div class="contact-note">Provide an email or phone number if you want a notification when your order is ready. You may leave both blank if you prefer no notifications.</div>
 
     <label for="textInput">Text to Engrave</label>
     <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
@@ -172,10 +194,11 @@
       <option value="Love Ya Like A Sister" style="font-family: 'Love Ya Like A Sister', cursive;">Love Ya Like A Sister</option>
       <option value="Ribeye Marrow" style="font-family: 'Ribeye Marrow', serif;">Ribeye Marrow</option>
     </select>
-    
+
     <canvas id="previewCanvas" width="600" height="150" aria-label="Text preview"></canvas>
     <button type="submit" disabled id="submitButton">Submit</button>
   </form>
+
   <div style="font-size: 0.7em; color: #999; text-align: center; margin-top: 15px;">Version 1.3.6</div>
 </div>
 
@@ -189,7 +212,7 @@
     appId: "1:973609433685:web:94e3ca86b0c163166332dc",
     measurementId: "G-ENMVNZJMM5"
   };
-  
+
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const storage = firebase.storage();
@@ -289,6 +312,16 @@
       alert('Please fill out all required fields.');
       return;
     }
+
+    // Note: contact fields are optional — user requested "(optional)".
+    // If you'd like to require at least one of email/phone, we can enforce that here.
+    // Example to require at least one: uncomment the block below.
+    /*
+    if (!email && !phone) {
+      alert('Please provide an email or phone number for notifications (or leave blank if you prefer no notification).');
+      return;
+    }
+    */
 
     // Use a sanitized filename and timestamp to avoid collisions
     const baseName = sanitizeFileName(`${customer}_${desc}_${location}`);
