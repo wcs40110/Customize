@@ -51,6 +51,8 @@
       font-size: 1.05em;
     }
     input[type="text"],
+    input[type="email"],
+    input[type="tel"],
     textarea,
     select {
       width: 100%;
@@ -65,6 +67,8 @@
       background-color: #fdfdfd;
     }
     input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
     textarea:focus,
     select:focus {
       border-color: #3498db;
@@ -113,6 +117,18 @@
       height: auto;
       display: block;
     }
+
+    /* Improve font rendering inside select (note: option styling is limited in some browsers) */
+    #fontSelector {
+      font-size: 1em;
+      padding-right: 36px;
+    }
+    /* Small helper text */
+    .helper {
+      font-size: 0.85em;
+      color: #888;
+      margin-top: 6px;
+    }
   </style>
 
   <!-- Firebase SDKs -->
@@ -128,25 +144,36 @@
   <form id="customForm" onsubmit="event.preventDefault(); handleSubmit();">
     <label for="customerInput">Customer Name</label>
     <input type="text" id="customerInput" placeholder="ie. Jane Smith" required />
+
     <label for="descInput">Item Description</label>
     <input type="text" id="descInput" placeholder="ie. black cat" required />
+
     <label for="locationInput">Engraving Location</label>
     <input type="text" id="locationInput" placeholder="ie. hat, back, sign etc." required />
+
+    <!-- New: contact fields for notifications -->
+    <label for="emailInput">Email</label>
+    <input type="email" id="emailInput" placeholder="Email (for notification only)" />
+    <label for="phoneInput">Phone</label>
+    <input type="tel" id="phoneInput" placeholder="Phone (for notification only)" />
+    <div class="helper">We will only use these to notify you about your order.</div>
+
     <label for="textInput">Text to Engrave</label>
     <textarea id="textInput" rows="3" maxlength="13" placeholder="Enter text for engraving..." required></textarea>
     <div id="charCount">13 characters remaining</div>
+
     <label for="fontSelector">Font</label>
     <select id="fontSelector" required>
       <option value="" disabled selected>Select a Font</option>
-      <option value="Satisfy">Satisfy</option>
-      <option value="Righteous">Righteous</option>
-      <option value="Grand Hotel">Grand Hotel</option>
-      <option value="Short Stack">Short Stack</option>
-      <option value="Love Ya Like A Sister">Love Ya Like A Sister</option>
-      <option value="Ribeye Marrow">Ribeye Marrow</option>
+      <option value="Satisfy" style="font-family: 'Satisfy', cursive;">Satisfy</option>
+      <option value="Righteous" style="font-family: 'Righteous', cursive;">Righteous</option>
+      <option value="Grand Hotel" style="font-family: 'Grand Hotel', cursive;">Grand Hotel</option>
+      <option value="Short Stack" style="font-family: 'Short Stack', cursive;">Short Stack</option>
+      <option value="Love Ya Like A Sister" style="font-family: 'Love Ya Like A Sister', cursive;">Love Ya Like A Sister</option>
+      <option value="Ribeye Marrow" style="font-family: 'Ribeye Marrow', serif;">Ribeye Marrow</option>
     </select>
     
-    <canvas id="previewCanvas" width="600" height="150"></canvas>
+    <canvas id="previewCanvas" width="600" height="150" aria-label="Text preview"></canvas>
     <button type="submit" disabled id="submitButton">Submit</button>
   </form>
   <div style="font-size: 0.7em; color: #999; text-align: center; margin-top: 15px;">Version 1.3.6</div>
@@ -176,6 +203,9 @@
   const fontSelector = document.getElementById('fontSelector');
   const submitButton = document.getElementById('submitButton');
 
+  // Set initial char count
+  charCount.textContent = `${MAX_CHAR_LIMIT} characters remaining`;
+
   // Disable submit until user is authenticated
   submitButton.disabled = true;
 
@@ -190,13 +220,14 @@
     });
 
   async function updatePreview() {
-    console.log('updatePreview called');
-    const text = textInput.value.trim();
+    const text = textInput.value.trim() || '';
     const font = fontSelector.value || 'Arial';
     // Attempt to load the selected font before drawing
     try {
       await document.fonts.load(`80px '${font}'`);
-    } catch(e) {}
+    } catch(e) {
+      // ignore
+    }
     previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
     previewCtx.fillStyle = 'white';
     previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -209,7 +240,6 @@
   }
 
   textInput.addEventListener('input', () => {
-    console.log('textInput input event');
     const remaining = MAX_CHAR_LIMIT - textInput.value.length;
     charCount.textContent = `${remaining} characters remaining`;
     if (remaining <= 3) {
@@ -223,12 +253,23 @@
   });
 
   fontSelector.addEventListener('change', () => {
-    console.log('fontSelector change event');
     updatePreview();
+    // Try to style the select element itself to show the chosen font if possible
+    const font = fontSelector.value;
+    if (font) {
+      fontSelector.style.fontFamily = `'${font}', Arial, sans-serif`;
+    } else {
+      fontSelector.style.fontFamily = '';
+    }
   });
 
   // Initial preview render
   updatePreview();
+
+  // Utility to sanitize file name
+  function sanitizeFileName(name) {
+    return name.replace(/[^a-z0-9_\-\.]/gi, '_');
+  }
 
   async function handleSubmit() {
     if (!auth.currentUser) {
@@ -241,13 +282,17 @@
     const location = document.getElementById('locationInput').value.trim();
     const text = textInput.value.trim();
     const font = fontSelector.value;
+    const email = document.getElementById('emailInput').value.trim();
+    const phone = document.getElementById('phoneInput').value.trim();
 
     if (!customer || !desc || !location || !text || !font) {
       alert('Please fill out all required fields.');
       return;
     }
 
-    const safeFileName = `${customer}_${desc}_${location}.png`.replace(/\s+/g, '_');
+    // Use a sanitized filename and timestamp to avoid collisions
+    const baseName = sanitizeFileName(`${customer}_${desc}_${location}`);
+    const safeFileName = `${baseName}_${Date.now()}.png`;
 
     try {
       const blob = await new Promise(resolve => previewCanvas.toBlob(resolve, 'image/png'));
@@ -263,6 +308,8 @@
         location,
         text,
         font,
+        email: email || null,   // optional
+        phone: phone || null,   // optional
         imageUrl: downloadURL,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -271,6 +318,8 @@
       document.getElementById('customForm').reset();
       charCount.textContent = `${MAX_CHAR_LIMIT} characters remaining`;
       charCount.style.color = '#7f8c8d';
+      // reset select font styling
+      fontSelector.style.fontFamily = '';
       updatePreview();
 
     } catch (error) {
@@ -282,6 +331,3 @@
 
 </body>
 </html>
-
-
-
